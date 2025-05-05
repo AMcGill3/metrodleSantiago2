@@ -1,5 +1,74 @@
-#root {
-  margin: 0 auto;
+:root {
+  --main-padding: 2rem;
+}
+body {
+  margin: 0;
+  padding: var(--main-padding);
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
+  overflow-x: hidden;
+}
+.logo {
+  width: 15rem;
 }
 
+canvas {
+  border: 0.1px solid;
+  border-radius: 6px;
+  align-self: center;
+  margin: 0 auto;
+  display: block;
+  height: 200px;
+  width: 200px;
+}
+
+.map-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.game-area {
+  max-width: 600px;
+  /* margin-top: 70px; */
+  margin-right: auto;
+  margin-left: auto;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.hamburger-button {
+  position: absolute;
+  left: 0;
+  height: 50px;
+  width: 40px;
+  background-color: transparent;
+  border: 0;
+  margin-left: 10px;
+}
+
+.main-area-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: calc(100% - 180px);
+  overflow-x: hidden;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.backdrop.active {
+  display: block;
+}

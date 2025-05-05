@@ -1,0 +1,41 @@
+.station-container {
+  background-color: rgb(202, 202, 202);
+  display: flex;
+  border-radius: 8px;
+  flex: 1;
+  flex-direction: column;
+  position: fixed;
+  bottom: 182px;
+  margin: 0 auto;
+  left: 2px;
+  right: 2px;
+  z-index: 10;
+  text-align: left;
+  padding-left: 10px;
+  justify-content: space-between;
+  max-width: 600px;
+}
+
+.station {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+  justify-content: space-between;
+  position: relative;
+}
+
+.station-circles {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  height: 30px;
+  width: 40px;
+}
+
+.station-name {
+  flex: 0 0 auto;
+  text-align: left;
+  min-width: 100px;
+}

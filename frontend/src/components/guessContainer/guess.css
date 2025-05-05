@@ -1,0 +1,40 @@
+.guess-card.not-guessed {
+  border-radius: 6px;
+  height: 46px;
+  align-items: center;
+  margin-bottom: 2px;
+  padding: 0px 4px;
+  justify-content: space-between;
+  background-color: rgb(202, 202, 202);
+  position: relative;
+}
+
+.guess-card.guessed {
+  border-radius: 6px;
+  height: 46px;
+  align-items: center;
+  margin-bottom: 2px;
+  padding: 0px 4px;
+  justify-content: space-between;
+  background-color: rgb(51, 51, 51);
+  color: white;
+  position: relative;
+}
+
+.station-name {
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.lines {
+  position: absolute;
+  gap: 5px;
+  height: 30px;
+  width: 30px;
+  bottom: 0px;
+  transform: translateY(5px);
+  display: flex;
+}

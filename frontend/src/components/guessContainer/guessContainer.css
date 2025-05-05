@@ -1,0 +1,8 @@
+.guess-container {
+  display: block;
+  font-size: 18px;
+  width: 98%;
+  margin: 0 auto;
+  border: 1px;
+  max-width: 600px;
+}
