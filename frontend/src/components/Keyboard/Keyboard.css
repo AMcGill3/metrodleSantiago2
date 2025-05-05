@@ -1,0 +1,27 @@
+.row {
+  text-align: center;
+  display: flex;
+}
+
+.non-letter-button {
+  background-color: #444444;
+  color: #aaaaaa;
+  height: 54px;
+  border-radius: 8px;
+  border-color: #444444;
+  border-width: 0;
+}
+
+img {
+  height: 50%;
+  margin-top: 5px;
+}
+
+.keyboard {
+  margin: 0 auto;
+  position: fixed;
+  bottom: 6px;
+  left: 0px;
+  right: 0px;
+  max-width: 600px;
+  }

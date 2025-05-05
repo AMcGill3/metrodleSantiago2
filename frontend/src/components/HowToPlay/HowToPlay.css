@@ -1,0 +1,36 @@
+.how-to-play {
+  transition:
+    top 0.2s ease,
+    opacity 0.2s ease;
+  position: fixed;
+  background-color: rgb(255, 255, 255);
+  z-index: 9999;
+  border-radius: 10px;
+  border: 1px solid rgb(0, 0, 0);
+  width: 600px;
+  overflow-y: auto;
+  padding: 20px 20px 32px 20px;
+  margin: auto;
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  transform: translateX(-50%);
+}
+
+.how-to-play-container.open {
+  top: 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+.how-to-play-container.closed {
+  top: 100px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.exit-how-to-play-button {
+  background-color: transparent;
+  margin-top: 10px;
+  margin-left: 90%;
+  border: 0;
+}
