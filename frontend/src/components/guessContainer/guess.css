@@ -38,3 +38,13 @@
   transform: translateY(5px);
   display: flex;
 }
+
+.stops-away {
+  transform: translateX(39%) translateY(-60%);
+}
+
+.direction {
+transform: translateY(-45px) translateX(570px);
+height: 25px;
+position: fixed;
+}

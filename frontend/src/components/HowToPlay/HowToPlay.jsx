@@ -6,6 +6,17 @@ import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 
 export const HowToPlay = ({ toggleHowToPlay }) => {
+  const getSantaLucíaObject = () => {
+    fetch("stations.json")
+    .then((response) => response.json())
+    .then((stations) => {return stations.find((station) => station.name === "Santa Lucía")});
+  };
+  const getUniversidadCatólicaObject = () => {
+    fetch("stations.json")
+    .then((response) => response.json())
+    .then((stations) => {return stations.find((station) => station.name === "Universidad Católica")});
+  };
+
   return (
     <div className="how-to-play">
       <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
@@ -106,22 +117,21 @@ export const HowToPlay = ({ toggleHowToPlay }) => {
           }
         })}
         {Object.entries(stationMap).map(([name, src]) => {
-          {
-            if (name === "santalucía")
-              return (
-                <img
-                  key={name}
-                  src={src}
-                  alt={name}
-                  style={{
-                    position: "absolute",
-                    width: "1705px",
-                    height: "1705px",
-                    left: "-855px", // Have to minus 100 from this and top to make centered
-                    top: "-446px",
-                  }}
-                ></img>
-              );
+          if (name === "santalucía") {
+            return (
+              <img
+                key={name}
+                src={src}
+                alt={name}
+                style={{
+                  position: "absolute",
+                  width: "1705px",
+                  height: "1705px",
+                  left: "-855px", // Have to minus 100 from this and top to make centered
+                  top: "-446px",
+                }}
+              ></img>
+            );
           }
         })}
       </div>
@@ -129,7 +139,7 @@ export const HowToPlay = ({ toggleHowToPlay }) => {
         El resultado de la suposición revelará a cuantas paradas estas de tu
         destino y en que dirección estas de tu suposición.
       </p>
-      <Guess guessed={true} name={"Santa Lucía"} lines={["1"]}></Guess>
+      <Guess guessed={true} guess={getSantaLucíaObject} targetStation={getUniversidadCatólicaObject}></Guess>
     </div>
   );
 };

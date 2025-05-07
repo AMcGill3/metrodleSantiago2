@@ -9,8 +9,10 @@ import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
 import { useState, useEffect } from "react";
+import { updateUser, createUser, getUser } from "./services/users";
 
 function App() {
+  const [isNewUser, setIsNewUser] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setAbout] = useState(false);
@@ -20,13 +22,15 @@ function App() {
   const [filteredStations, setFilteredStations] = useState([]);
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
+  // const [totalJourney, setTotalJourney] = useState([])
 
-  const normalize = (str) =>
-    str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/\s+/g, "");
+  const setTargetStation = (name) => {
+    return stations.find((station) => station.name === name);
+  };
+
+  // const updateTotalJourney = () => {
+
+  // }
 
   useEffect(() => {
     fetch("stations.json")
@@ -45,6 +49,30 @@ function App() {
       setFilteredStations([]);
     }
   }, [search, stations]);
+
+  useEffect(() => {
+    if (!document.cookie.includes("userId")) {
+      setIsNewUser(true);
+      createUser().then((username) => {
+        document.cookie = `userId=${username}; path=/;`;
+        console.log("cookie set", document.cookie);
+      });
+      setShowHowToPlay(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isNewUser && !showHowToPlay) {
+      setIsNewUser(false);
+    }
+  }, [isNewUser, showHowToPlay]);
+
+  const normalize = (str) =>
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/\s+/g, "");
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -74,6 +102,7 @@ function App() {
     setFilteredStations([]);
     setSearch("");
   };
+  const targetStation = setTargetStation("Bio Bío");
   return (
     <>
       <div
@@ -94,6 +123,21 @@ function App() {
       {(showMenu || showHowToPlay || showAbout) && (
         <div className="backdrop"></div>
       )}
+      <textarea
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="provisional-input"
+        onKeyDown={(e) => {
+          if (
+            e.key === "Enter" &&
+            !e.shiftKey &&
+            filteredStations.length === 1
+          ) {
+            e.preventDefault();
+            makeGuess();
+          }
+        }}
+      ></textarea>
       <div className="main-area-container">
         <div className="game-area">
           {!showMenu && (
@@ -114,21 +158,6 @@ function App() {
               </svg>
             </button>
           )}
-          <textarea
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="provisional-input"
-            onKeyDown={(e) => {
-              if (
-                e.key === "Enter" &&
-                !e.shiftKey &&
-                filteredStations.length === 1
-              ) {
-                e.preventDefault();
-                makeGuess();
-              }
-            }}
-          ></textarea>
           <div
             className="map-container"
             style={{
@@ -170,7 +199,6 @@ function App() {
             })}
             {Object.entries(stationMap).map(([name, src]) => {
               if (guessedStationNames.includes(normalize(name))) {
-                console.log(guessedStationNames);
                 return (
                   <img
                     key={name}
@@ -190,9 +218,9 @@ function App() {
           </div>
         </div>
         <div className="guess-list-container">
-          <GuessContainer guesses={guesses}></GuessContainer>
+          <GuessContainer guesses={guesses} targetStation={targetStation}></GuessContainer>
         </div>
-        {search !== "" && (
+        {filteredStations.length > 0 && (
           <div className="stations-container">
             <StationContainer
               search={search}

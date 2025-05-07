@@ -3,9 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const usersRouter = require("./routes/users");
-const postsRouter = require("./routes/posts");
-const authenticationRouter = require("./routes/authentication");
-const tokenChecker = require("./middleware/tokenChecker");
+const stationsRouter = require("./routes/stations");
+const gamesRouter = require("./routes/games");
 
 const app = express();
 
@@ -19,8 +18,8 @@ app.use(bodyParser.json());
 
 // API Routes
 app.use("/users", usersRouter);
-app.use("/posts", tokenChecker, postsRouter);
-app.use("/tokens", authenticationRouter);
+app.use("/stations", stationsRouter);
+app.use("/games", gamesRouter);
 
 // 404 Handler
 app.use((_req, res) => {
@@ -38,3 +37,4 @@ app.use((err, _req, res, _next) => {
 });
 
 module.exports = app;
+

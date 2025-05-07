@@ -34,11 +34,11 @@ canvas {
 
 .game-area {
   max-width: 600px;
-  /* margin-top: 70px; */
   margin-right: auto;
   margin-left: auto;
   align-items: flex-start;
   justify-content: center;
+  display: flex;
 }
 
 .hamburger-button {

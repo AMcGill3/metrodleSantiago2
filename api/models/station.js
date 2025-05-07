@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const StationsSchema = new mongoose.Schema({
+const StationSchema = new mongoose.Schema({
   name: String,
   lines: Array,
   coordinates: Array,
 });
 
-const Station = mongoose.model("Post", PostSchema);
+const Station = mongoose.model("Station", StationSchema);
 
-module.exports = Post;
+module.exports = Station;
