@@ -1,0 +1,9 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78 54" width="78" height="54">
+	<title>exitMenu</title>
+	<defs>
+		<image  width="53" height="54" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA2AQMAAABdvEOdAAAAAXNSR0IB2cksfwAAAAZQTFRFAAAA////pdmf3QAAAAJ0Uk5TAP9bkSK1AAAA20lEQVR4nE2Rva2EMBCEZ+5HkEEH0Am08jq49CKbDq6VC192dAIdQIYlYG+RmKcXWLNa2Z5vZ1mNALJfNl0LVD3DTw00b9pcAuFJSzlgibbdwN3VLriuriCyJTHELhbT7Nq31TCz+Yy1H3pdeo/FlHJDx2zZ7jvI6+pqF3K3+7rdCEO+pJwI8fWYS6L5DPVYE9UA9C1RTEAXDzO4Jd0cjuDVjgPJ4eCIriE6sutB8F/VP+/pnf7Rv/KRrzjEdXKKW3NoLs2puZWDclFOyu0vR+WqnM/ctQft5dzTF8WgmweJ7KivAAAAAElFTkSuQmCC"/>
+	</defs>
+	<style>
+	</style>
+	<use id="Background" href="#img1" x="12" y="0"/>
+</svg>

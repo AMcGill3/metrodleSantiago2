@@ -5,8 +5,16 @@ import arrowMap from "../../utils/loadArrowSVGs";
 import { loadGraphFromTGF } from "../../utils/loadGraphFromTGF.js";
 import { buildGraph, bfsDistance } from "../../utils/graphUtils.js";
 import { useEffect, useState } from "react";
+import upArrowDark from "../../assets/DirectionArrows/upDark.svg";
+import northEastArrowDark from "../../assets/DirectionArrows/northEastDark.svg";
+import eastArrowDark from "../../assets/DirectionArrows/eastDark.svg";
+import southEastArrowDark from "../../assets/DirectionArrows/southEastDark.svg";
+import downArrowDark from "../../assets/DirectionArrows/downDark.svg";
+import southWestArrowDark from "../../assets/DirectionArrows/southWestDark.svg";
+import westArrowDark from "../../assets/DirectionArrows/westDark.svg";
+import northWestArrowDark from "../../assets/DirectionArrows/northWestDark.svg";
 
-export const Guess = ({ guessed, guess, targetStation }) => {
+export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
   const [nodes, setNodes] = useState(null);
   const [graph, setGraph] = useState(null);
 
@@ -20,10 +28,38 @@ export const Guess = ({ guessed, guess, targetStation }) => {
     fetchGraph();
   }, []);
 
+  const up =
+    localStorage.getItem("theme") === "light" ? arrowMap["up"] : upArrowDark;
+  const northEast =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["northEast"]
+      : northEastArrowDark;
+  const east =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["east"]
+      : eastArrowDark;
+  const southEast =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["southEast"]
+      : southEastArrowDark;
+  const down = localStorage.getItem("theme") === "light" ? arrowMap["down"] : downArrowDark;
+  const southWest =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["southWest"]
+      : southWestArrowDark;
+  const west =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["west"]
+      : westArrowDark;
+  const northWest =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["northWest"]
+      : northWestArrowDark;
+
   const calculateDirection = (guessCoordinates) => {
     return [
       targetStation.coordinates[0] - guessCoordinates[0],
-      targetStation.coordinates[1]- guessCoordinates[1],
+      targetStation.coordinates[1] - guessCoordinates[1],
     ];
   };
 
@@ -32,38 +68,38 @@ export const Guess = ({ guessed, guess, targetStation }) => {
     const y = direction[1];
     if (x > 0 && y >= 0) {
       if (y <= 50) {
-        return arrowMap["east"];
+        return east;
       } else if (x <= 50) {
-        return arrowMap["down"];
+        return down;
       } else {
-        return arrowMap["southEast"];
+        return southEast;
       }
     } else if (x > 0 && y <= 0) {
       if (y >= -50) {
-        return arrowMap["east"];
+        return east;
       } else if (x <= 50) {
-        return arrowMap["up"];
+        return up;
       } else {
-        return arrowMap["northEast"];
+        return northEast;
       }
     } else if (x < 0 && y < 0) {
       if (y >= -50) {
-        return arrowMap["west"];
+        return west;
       } else if (x <= 50) {
-        return arrowMap["up"];
+        return up;
       } else {
-        return arrowMap["northWest"];
+        return northWest;
       }
     }
     if (x === 0 && y === 0) {
       return "correct";
     } else {
       if (y <= 50) {
-        return arrowMap["west"];
+        return west;
       } else if (x >= -50) {
-        return arrowMap["down"];
+        return down;
       } else {
-        return arrowMap["southWest"];
+        return southWest;
       }
     }
   };
@@ -93,40 +129,42 @@ export const Guess = ({ guessed, guess, targetStation }) => {
 
   const name = guess && guess.name ? guess.name : null;
   const lines = guess && guess.lines ? guess.lines : null;
-  targetStation && targetStation.name && console.log("target: ", targetStation.name)
   return (
-<div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
-  <div className="left">
-    {name && <div className="station-name">{name}</div>}
-    {lines && (
-      <div className="lines">
-        {lines.map((line) => {
-          const circle = circleMap[`circle${line}`];
-          return (
-            <img
-              className="circle"
-              key={line}
-              src={circle}
-              alt={`Line ${line}`}
-            />
-          );
-        })}
+    <div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
+      <div className="left">
+        {name && <div className="station-name">{name}</div>}
+        {lines && (
+          <div className="lines">
+            {lines.map((line) => {
+              const circle =
+                guessedLines.has(line) && !targetStation.lines.includes(line)
+                  ? wrongCircleMap[`circle${line}Wrong`]
+                  : circleMap[`circle${line}`];
+              return (
+                <img
+                  className="circle"
+                  key={line}
+                  src={circle}
+                  alt={`Line ${line}`}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
-    )}
-  </div>
 
-  {guessed && stopsAway !== 0 && (
-    <div className="right">
-      <div className="stops-away">
-        {stopsAway} {stopsAway === 1 ? "parada" : "paradas"}
-      </div>
-      {arrow !== "correct" && (
-        <div className="direction">
-          <img src={arrow} alt="direction" />
+      {guessed && stopsAway !== 0 && (
+        <div className="right">
+          <div className="stops-away">
+            {stopsAway} {stopsAway === 1 ? "parada" : "paradas"}
+          </div>
+          {arrow !== "correct" && (
+            <div className="direction">
+              <img src={arrow} alt="direction" />
+            </div>
+          )}
         </div>
       )}
     </div>
-  )}
-</div>
   );
 };

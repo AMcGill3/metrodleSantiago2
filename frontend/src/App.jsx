@@ -4,6 +4,7 @@ import { GuessContainer } from "./components/guessContainer/GuessContainer";
 import { HowToPlay } from "./components/HowToPlay/HowToPlay";
 import { About } from "./components/About/About";
 import { Menu } from "./components/Menu/Menu";
+import { Theme } from "./components/Theme/Theme";
 import { StationContainer } from "./components/StationContainer/StationContainer";
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
@@ -15,6 +16,7 @@ function App() {
   const [isNewUser, setIsNewUser] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showThemePanel, setShowThemePanel] = useState(false);
   const [showAbout, setAbout] = useState(false);
   const [search, setSearch] = useState("");
   const [guesses, setGuesses] = useState([]);
@@ -22,6 +24,11 @@ function App() {
   const [filteredStations, setFilteredStations] = useState([]);
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
+  const [theme, setTheme] = useState(
+    (localStorage.getItem("theme")) ? localStorage.getItem("theme") :
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  );
+
   // const [totalJourney, setTotalJourney] = useState([])
 
   const setTargetStation = (name) => {
@@ -31,6 +38,20 @@ function App() {
   // const updateTotalJourney = () => {
 
   // }
+  const toggleTheme = (mode) => {
+    if (mode === "system") {
+      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    } else if (mode === "light") {
+      setTheme("light");
+    } else {
+      setTheme("dark");
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+    document.body.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     fetch("stations.json")
@@ -44,7 +65,11 @@ function App() {
       const filtered = stations.filter((station) =>
         station.name.toLowerCase().startsWith(search.toLowerCase())
       );
-      setFilteredStations(filtered);
+      setFilteredStations(
+        filtered.sort((a, b) =>
+          a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+        )
+      );
     } else {
       setFilteredStations([]);
     }
@@ -92,6 +117,13 @@ function App() {
     }
   };
 
+  const toggleThemePanel = () => {
+    setShowThemePanel((prev) => !prev);
+    if (showMenu) {
+      toggleMenu();
+    }
+  };
+
   const makeGuess = () => {
     setGuesses([...guesses, filteredStations[0]]);
     setGuessedLines((prev) => new Set([...prev, ...filteredStations[0].lines]));
@@ -116,14 +148,25 @@ function App() {
       <div className={`about-container ${showAbout ? "open" : "closed"}`}>
         <About toggleAbout={toggleAbout}></About>
       </div>
+      <div
+        className={`theme-panel-container ${
+          showThemePanel ? "open" : "closed"
+        }`}
+      >
+        <Theme
+          toggleThemePanel={toggleThemePanel}
+          toggleTheme={toggleTheme}
+        ></Theme>
+      </div>
       <div className={`menu-container ${showMenu ? "open" : "closed"}`}>
         <Menu
           toggleMenu={toggleMenu}
           toggleHowToPlay={toggleHowToPlay}
           toggleAbout={toggleAbout}
+          toggleThemePanel={toggleThemePanel}
         ></Menu>
       </div>
-      {(showMenu || showHowToPlay || showAbout) && (
+      {(showMenu || showHowToPlay || showAbout || showThemePanel) && (
         <div className="backdrop"></div>
       )}
       <textarea
@@ -146,7 +189,7 @@ function App() {
           {!showMenu && (
             <button className="hamburger-button" onClick={toggleMenu}>
               <svg
-                className="svgIcon"
+                className={`svgIcon ${theme === "dark" ? "dark" : "light"}`}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 40 40"
               >
@@ -224,6 +267,7 @@ function App() {
           <GuessContainer
             guesses={guesses}
             targetStation={targetStation}
+            guessedLines={guessedLines}
           ></GuessContainer>
         </div>
         {filteredStations.length > 0 && (
@@ -233,6 +277,9 @@ function App() {
               stations={stations}
               setFilteredStations={setFilteredStations}
               filteredStations={filteredStations}
+              guessedLines={guessedLines}
+              targetStation={targetStation}
+              guesses={guesses}
             ></StationContainer>
           </div>
         )}

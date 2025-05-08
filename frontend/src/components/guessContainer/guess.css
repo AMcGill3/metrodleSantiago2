@@ -10,13 +10,13 @@
 }
 
 .guess-card.guessed {
-  background-color: rgb(51, 51, 51);
-  color: white;
+  background-color: var(--guess-card-guessed-bg);
+  color: var(--text-colour-guess-card-bg);
 }
 
 .guess-card.not-guessed {
-  background-color: rgb(202, 202, 202);
-  color: black;
+  background-color: var(--guess-card-not-guessed-bg);
+  color: var(--text-colour-guess-card-bg);
 }
 
 .left {

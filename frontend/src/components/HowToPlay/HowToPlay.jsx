@@ -1,5 +1,6 @@
 import "./HowToPlay.css";
 import exitMenu from "../../assets/exitMenu.png";
+import exitMenuDark from "../../assets/exitMenuDark.svg";
 import map from "../../assets/metroMapBackground.svg";
 import lineMap from "../../utils/loadLinesSVGs";
 import stationMap from "../../utils/loadStationSvgs";
@@ -10,12 +11,16 @@ export const HowToPlay = ({ toggleHowToPlay, stations }) => {
     return stations.find((station) => station.name === name);
   };
 
+  const exit = localStorage.getItem("theme") === "light"
+  ? exitMenu
+  : exitMenuDark
+
   const santalucía = getStation("Santa Lucía")
   const universidadCatólica = getStation("Universidad Católica")
   return (
     <div className="how-to-play">
       <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
-        <img src={exitMenu} className="exit-menu-img"></img>
+        <img src={exit} className="exit-menu-img"></img>
       </button>
       <h1>Cómo Jugar</h1>
       <p>
@@ -134,7 +139,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations }) => {
         El resultado de la suposición revelará a cuantas paradas estas de tu
         destino y en que dirección estas de tu suposición.
       </p>
-      <Guess guessed={true} guess={santalucía} targetStation={universidadCatólica}></Guess>
+      <Guess guessed={true} guess={santalucía} targetStation={universidadCatólica} guessedLines={new Set ("1")}></Guess>
     </div>
   );
 };

@@ -3,7 +3,8 @@
     top 0.2s ease,
     opacity 0.2s ease;
   position: fixed;
-  background-color: rgb(255, 255, 255);
+  background-color: var(--menu-bg);
+  color: var(--text-colour-bg);
   z-index: 9999;
   border-radius: 10px;
   border: 1px solid black;
@@ -15,7 +16,6 @@
   top: 4px;
   bottom: 4px;
   transform: translateX(-50%);
-  
 }
 
 .about-container.open {

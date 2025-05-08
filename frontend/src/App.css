@@ -9,6 +9,7 @@ body {
   margin-right: auto;
   text-align: center;
   overflow-x: hidden;
+  background-color: var(--bg-colour);
 }
 .logo {
   width: 15rem;
@@ -49,6 +50,14 @@ canvas {
   background-color: transparent;
   border: 0;
   margin-left: 10px;
+}
+
+.svgIcon.light path{
+  fill: black
+}
+
+.svgIcon.dark path{
+  fill: rgb(255, 255, 255)
 }
 
 .main-area-container {

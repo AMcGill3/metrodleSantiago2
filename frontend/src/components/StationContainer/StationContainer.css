@@ -17,6 +17,12 @@
   border: 1px solid black;
 }
 
+.station.guessed {
+  pointer-events: none;
+  filter: grayscale(60%);
+  opacity: 0.5;
+}
+
 .station {
   display: flex;
   flex-direction: row;

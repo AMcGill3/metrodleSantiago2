@@ -15,7 +15,8 @@
 }
 
 .menu-container {
-  background-color: white;
+  background-color: var(--menu-bg);
+  color: var(--text-colour-bg);
   position: fixed;
   position: fixed;
   top: 0px;

@@ -1,11 +1,16 @@
 import "./About.css";
 import exitMenu from "../../assets/exitMenu.png";
+import exitMenuDark from "../../assets/exitMenuDark.svg"
 
 export const About = ({ toggleAbout }) => {
+  const exit = localStorage.getItem("theme") === "light"
+  ? exitMenu
+  : exitMenuDark
+
   return (
     <div className="how-to-play">
       <button className="exit-about-button" onClick={toggleAbout}>
-        <img src={exitMenu} className="exit-menu-img"></img>
+        <img src={exit} className="exit-menu-img"></img>
       </button>
       <h1>Sobre</h1>
       <p>

@@ -11,7 +11,6 @@ export const buildGraph = (edges) => {
 
 export const bfsDistance = (graph, start, end) => {
   if (start === end) return 0;
-  console.log("Start:", start, "End:", end);
   const visited = new Set();
   const queue = [[start, 0]];
 
