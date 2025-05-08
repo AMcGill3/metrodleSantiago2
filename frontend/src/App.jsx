@@ -108,7 +108,10 @@ function App() {
       <div
         className={`how-to-play-container ${showHowToPlay ? "open" : "closed"}`}
       >
-        <HowToPlay toggleHowToPlay={toggleHowToPlay}></HowToPlay>
+        <HowToPlay
+          toggleHowToPlay={toggleHowToPlay}
+          stations={stations}
+        ></HowToPlay>
       </div>
       <div className={`about-container ${showAbout ? "open" : "closed"}`}>
         <About toggleAbout={toggleAbout}></About>
@@ -175,7 +178,7 @@ function App() {
                 position: "absolute",
                 width: "1705px",
                 height: "1705px",
-                left: "-815px", // Have to minus 100 from this and top to make centered
+                left: "-815px", // Have to minus 100 from target station coordinates to make centered
                 top: "-645.5px",
               }}
             />
@@ -190,7 +193,7 @@ function App() {
                       position: "absolute",
                       width: "1705px",
                       height: "1705px",
-                      left: "-815px", // Have to minus 100 from this and top to make centered
+                      left: "-815px", // Have to minus 100 from target station coordinates to make centered
                       top: "-645.5px",
                     }}
                   ></img>
@@ -218,7 +221,10 @@ function App() {
           </div>
         </div>
         <div className="guess-list-container">
-          <GuessContainer guesses={guesses} targetStation={targetStation}></GuessContainer>
+          <GuessContainer
+            guesses={guesses}
+            targetStation={targetStation}
+          ></GuessContainer>
         </div>
         {filteredStations.length > 0 && (
           <div className="stations-container">

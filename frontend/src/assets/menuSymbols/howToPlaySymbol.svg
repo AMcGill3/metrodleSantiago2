@@ -1,0 +1,13 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+	<title>New Project</title>
+	<style>
+		tspan { white-space:pre } 
+		.s0 { fill: none;stroke: #000000;stroke-miterlimit:100;stroke-width: 30 } 
+		.t1 { font-size: 350px;fill: #000000;font-weight: 400;font-family: "DejaVuSerif", "DejaVu Serif" } 
+	</style>
+	<path id="Shape 1" fill-rule="evenodd" class="s0" d="m199.5 385c-102.6 0-185.5-82.7-185.5-185 0-102.3 82.9-185 185.5-185 102.6 0 185.5 82.7 185.5 185 0 102.3-82.9 185-185.5 185z"/>
+	<text id="?" style="transform: matrix(1,0,0,1,103,327)" >
+		<tspan x="0" y="0" class="t1">?
+</tspan>
+	</text>
+</svg>

@@ -24,7 +24,7 @@ export const Keyboard = () => {
           <Key key={letter} letter={letter} />
         ))}
         <button className="non-letter-button">
-          <img src={deleteSymbol}></img>
+          <img className="delete-symbol" src={deleteSymbol}></img>
         </button>
       </div>
     </div>

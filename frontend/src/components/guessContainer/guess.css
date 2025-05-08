@@ -1,50 +1,57 @@
-.guess-card.not-guessed {
-  border-radius: 6px;
-  height: 46px;
-  align-items: center;
-  margin-bottom: 2px;
-  padding: 0px 4px;
+.guess-card {
+  display: flex;
   justify-content: space-between;
-  background-color: rgb(202, 202, 202);
+  align-items: center;
   position: relative;
+  height: 46px;
+  border-radius: 6px;
+  padding: 0 4px;
+  margin-bottom: 2px;
 }
 
 .guess-card.guessed {
-  border-radius: 6px;
-  height: 46px;
-  align-items: center;
-  margin-bottom: 2px;
-  padding: 0px 4px;
-  justify-content: space-between;
   background-color: rgb(51, 51, 51);
   color: white;
-  position: relative;
+}
+
+.guess-card.not-guessed {
+  background-color: rgb(202, 202, 202);
+  color: black;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
 .station-name {
-  width: auto;
-  white-space: nowrap;
-  overflow: hidden;
-  grid-column: 1;
-  grid-row: 1;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .lines {
-  position: absolute;
-  gap: 5px;
-  height: 30px;
-  width: 30px;
-  bottom: 0px;
-  transform: translateY(5px);
   display: flex;
+  gap: 5px;
+  height: 15px;
+}
+
+.circle {
+  height: 100%;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 10px;
 }
 
 .stops-away {
-  transform: translateX(39%) translateY(-60%);
+  font-size: 0.9rem;
 }
 
-.direction {
-transform: translateY(-45px) translateX(570px);
-height: 25px;
-position: fixed;
+.direction img {
+  height: 13px;
 }

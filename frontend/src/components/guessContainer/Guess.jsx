@@ -1,5 +1,6 @@
 import "./Guess.css";
 import circleMap from "../../utils/loadLineCircleSVGs";
+import wrongCircleMap from "../../utils/loadWrongLineCirclesSVGs.js";
 import arrowMap from "../../utils/loadArrowSVGs";
 import { loadGraphFromTGF } from "../../utils/loadGraphFromTGF.js";
 import { buildGraph, bfsDistance } from "../../utils/graphUtils.js";
@@ -21,8 +22,8 @@ export const Guess = ({ guessed, guess, targetStation }) => {
 
   const calculateDirection = (guessCoordinates) => {
     return [
-      guessCoordinates[0] - targetStation.coordinates[0],
-      guessCoordinates[1] - targetStation.coordinates[1],
+      targetStation.coordinates[0] - guessCoordinates[0],
+      targetStation.coordinates[1]- guessCoordinates[1],
     ];
   };
 
@@ -76,47 +77,56 @@ export const Guess = ({ guessed, guess, targetStation }) => {
   const nameToId =
     nodes &&
     Object.entries(nodes).reduce((acc, [id, name]) => {
-      acc[name.toLowerCase()] = Number(id);
+      acc[name] = Number(id);
       return acc;
     }, {});
 
   const stopsAway =
-    guess && guess.name && targetStation && targetStation.name && graph
+    guess &&
+    guess.name &&
+    targetStation &&
+    targetStation.name &&
+    graph &&
+    nameToId
       ? bfsDistance(graph, nameToId[guess.name], nameToId[targetStation.name])
       : null;
 
   const name = guess && guess.name ? guess.name : null;
-
   const lines = guess && guess.lines ? guess.lines : null;
-
+  targetStation && targetStation.name && console.log("target: ", targetStation.name)
   return (
-    <div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
-      {name && <div className="station-name">{name}</div>}
-      {lines && (
-        <div className="lines">
-          {lines.map((line) => {
-            const circle = circleMap[`circle${line}`];
-            return (
-              <img
-                className="circle"
-                key={line}
-                src={circle}
-                alt={`Line ${line}`}
-              />
-            );
-          })}
-        </div>
-      )}
-      {guessed && (
-        <div className="stops-away">
-          {stopsAway} {stopsAway === 1 ? "parada" : "paradas"}
-        </div>
-      )}
-      {guessed && (
+<div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
+  <div className="left">
+    {name && <div className="station-name">{name}</div>}
+    {lines && (
+      <div className="lines">
+        {lines.map((line) => {
+          const circle = circleMap[`circle${line}`];
+          return (
+            <img
+              className="circle"
+              key={line}
+              src={circle}
+              alt={`Line ${line}`}
+            />
+          );
+        })}
+      </div>
+    )}
+  </div>
+
+  {guessed && stopsAway !== 0 && (
+    <div className="right">
+      <div className="stops-away">
+        {stopsAway} {stopsAway === 1 ? "parada" : "paradas"}
+      </div>
+      {arrow !== "correct" && (
         <div className="direction">
-          {arrow !== "correct" && <img src={arrow} alt="direction"></img>}
+          <img src={arrow} alt="direction" />
         </div>
       )}
     </div>
+  )}
+</div>
   );
 };

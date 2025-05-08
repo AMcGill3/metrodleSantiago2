@@ -10,6 +10,10 @@
   height: 28px;
 }
 
+.menuSymbol {
+  height: 30px;
+}
+
 .menu-container {
   background-color: white;
   position: fixed;
@@ -39,4 +43,10 @@
   border: 0;
   font-size: large;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  gap: 10px;
+  align-items: center;
+  margin-left: 15px;
 }

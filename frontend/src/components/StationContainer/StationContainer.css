@@ -31,8 +31,9 @@
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
-  height: 30px;
+  height: 17px;
   width: 40px;
+  margin-top: 5px;
 }
 
 .station-name {

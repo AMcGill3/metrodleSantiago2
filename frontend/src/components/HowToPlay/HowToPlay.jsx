@@ -5,18 +5,13 @@ import lineMap from "../../utils/loadLinesSVGs";
 import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 
-export const HowToPlay = ({ toggleHowToPlay }) => {
-  const getSantaLucíaObject = () => {
-    fetch("stations.json")
-    .then((response) => response.json())
-    .then((stations) => {return stations.find((station) => station.name === "Santa Lucía")});
-  };
-  const getUniversidadCatólicaObject = () => {
-    fetch("stations.json")
-    .then((response) => response.json())
-    .then((stations) => {return stations.find((station) => station.name === "Universidad Católica")});
+export const HowToPlay = ({ toggleHowToPlay, stations }) => {
+  const getStation = (name) => {
+    return stations.find((station) => station.name === name);
   };
 
+  const santalucía = getStation("Santa Lucía")
+  const universidadCatólica = getStation("Universidad Católica")
   return (
     <div className="how-to-play">
       <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
@@ -139,7 +134,7 @@ export const HowToPlay = ({ toggleHowToPlay }) => {
         El resultado de la suposición revelará a cuantas paradas estas de tu
         destino y en que dirección estas de tu suposición.
       </p>
-      <Guess guessed={true} guess={getSantaLucíaObject} targetStation={getUniversidadCatólicaObject}></Guess>
+      <Guess guessed={true} guess={santalucía} targetStation={universidadCatólica}></Guess>
     </div>
   );
 };
