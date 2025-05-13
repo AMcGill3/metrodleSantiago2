@@ -2,8 +2,8 @@ import "./About.css";
 import exitMenu from "../../assets/exitMenu.png";
 import exitMenuDark from "../../assets/exitMenuDark.svg"
 
-export const About = ({ toggleAbout }) => {
-  const exit = localStorage.getItem("theme") === "light"
+export const About = ({ toggleAbout, theme }) => {
+  const exit = theme === "light"
   ? exitMenu
   : exitMenuDark
 

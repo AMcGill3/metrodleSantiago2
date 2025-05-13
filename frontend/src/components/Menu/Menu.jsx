@@ -17,30 +17,21 @@ export const Menu = ({
   toggleHowToPlay,
   toggleAbout,
   toggleThemePanel,
+  theme,
 }) => {
-  const exit =
-    localStorage.getItem("theme") === "light" ? exitMenu : exitMenuDark;
+  const exit = theme === "light" ? exitMenu : exitMenuDark;
 
-  const howToPlay =
-    localStorage.getItem("theme") === "light"
-      ? howToPlaySymbol
-      : howToPlaySymbolDark;
+  const howToPlay = theme === "light" ? howToPlaySymbol : howToPlaySymbolDark;
 
-  const about =
-    localStorage.getItem("theme") === "light" ? aboutSymbol : aboutSymbolDark;
+  const about = theme === "light" ? aboutSymbol : aboutSymbolDark;
 
-  const themeImage =
-    localStorage.getItem("theme") === "light" ? themeSymbol : themeSymbolDark;
+  const themeImage = theme === "light" ? themeSymbol : themeSymbolDark;
 
   const statistics =
-    localStorage.getItem("theme") === "light"
-      ? statisticsSymbol
-      : statisticsSymbolDark;
+    theme === "light" ? statisticsSymbol : statisticsSymbolDark;
 
   const leaderboard =
-    localStorage.getItem("theme") === "light"
-      ? leaderboardSymbol
-      : leaderboardSymbolDark;
+    theme === "light" ? leaderboardSymbol : leaderboardSymbolDark;
 
   return (
     <div className="menu">

@@ -6,12 +6,12 @@ import lineMap from "../../utils/loadLinesSVGs";
 import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 
-export const HowToPlay = ({ toggleHowToPlay, stations }) => {
+export const HowToPlay = ({ toggleHowToPlay, stations, theme }) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
   };
 
-  const exit = localStorage.getItem("theme") === "light"
+  const exit = theme === "light"
   ? exitMenu
   : exitMenuDark
 

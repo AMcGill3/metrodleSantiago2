@@ -1,4 +1,3 @@
-const { getGameStats } = require("../../frontend/src/services/games");
 const User = require("../models/user");
 
 // this needs to return the id of the newly created game to be used in the makeGuess function

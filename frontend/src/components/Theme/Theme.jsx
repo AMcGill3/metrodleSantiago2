@@ -2,9 +2,9 @@ import "./Theme.css";
 import exitButton from "../../assets/exitMenu.png";
 import exitButtonDark from "../../assets/exitMenuDark.svg";
 
-export const Theme = ({ toggleThemePanel, toggleTheme }) => {
+export const Theme = ({ toggleThemePanel, toggleTheme, theme }) => {
   const exit =
-    localStorage.getItem("theme") === "light" ? exitButton : exitButtonDark;
+    theme === "light" ? exitButton : exitButtonDark;
   return (
     <>
       <button className="close-theme-selector" onClick={toggleThemePanel}>

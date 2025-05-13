@@ -1,5 +1,6 @@
 .station-container {
-  background-color: rgb(202, 202, 202);
+  background-color: var(--guess-card-not-guessed-bg);
+  color: var(--text-colour-bg);
   display: flex;
   border-radius: 8px;
   flex: 1;
@@ -46,4 +47,13 @@
   flex: 0 0 auto;
   text-align: left;
   min-width: 100px;
+}
+
+.highlight {
+  background-color: rgba(147, 147, 147, 0.8);
+  border-radius: 2px;
+}
+.no-results-text {
+  background-color: #cc8080;
+  border-radius: 2px;
 }

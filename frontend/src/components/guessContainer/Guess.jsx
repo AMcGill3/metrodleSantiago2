@@ -67,25 +67,25 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
     const x = direction[0];
     const y = direction[1];
     if (x > 0 && y >= 0) {
-      if (y <= 50) {
+      if (y <= 25) {
         return east;
-      } else if (x <= 50) {
+      } else if (x <= 25) {
         return down;
       } else {
         return southEast;
       }
     } else if (x > 0 && y <= 0) {
-      if (y >= -50) {
+      if (y >= -25) {
         return east;
-      } else if (x <= 50) {
+      } else if (x <= 25) {
         return up;
       } else {
         return northEast;
       }
     } else if (x < 0 && y < 0) {
-      if (y >= -50) {
+      if (y >= -25) {
         return west;
-      } else if (x <= 50) {
+      } else if (x >= -25) {
         return up;
       } else {
         return northWest;
@@ -94,9 +94,9 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
     if (x === 0 && y === 0) {
       return "correct";
     } else {
-      if (y <= 50) {
+      if (y <= 25) {
         return west;
-      } else if (x >= -50) {
+      } else if (x >= -25) {
         return down;
       } else {
         return southWest;

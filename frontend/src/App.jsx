@@ -9,7 +9,7 @@ import { StationContainer } from "./components/StationContainer/StationContainer
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { updateUser, createUser, getUser } from "./services/users";
 
 function App() {
@@ -25,22 +25,28 @@ function App() {
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
   const [theme, setTheme] = useState(
-    (localStorage.getItem("theme")) ? localStorage.getItem("theme") :
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    localStorage.getItem("theme")
+      ? localStorage.getItem("theme")
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
   );
+  const targetStation = useMemo(() => {
+    return stations.find((station) => station.name === "Los Héroes");
+  }, [stations]);
 
   // const [totalJourney, setTotalJourney] = useState([])
-
-  const setTargetStation = (name) => {
-    return stations.find((station) => station.name === name);
-  };
 
   // const updateTotalJourney = () => {
 
   // }
   const toggleTheme = (mode) => {
     if (mode === "system") {
-      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      setTheme(
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+      );
     } else if (mode === "light") {
       setTheme("light");
     } else {
@@ -61,14 +67,40 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (showMenu === false) {
+        if (/^[a-zA-ZñÑ]$/.test(e.key) && !e.metaKey && !e.shiftKey) {
+          setSearch(search + e.key);
+        }
+        if (e.key === "Backspace" || e.key === "Delete") {
+          setSearch(search.substring(0, search.length - 1));
+        }
+        if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1) {
+          makeGuess();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showMenu, search, filteredStations]);
+
+  useEffect(() => {
     if (search.trim() !== "") {
       const filtered = stations.filter((station) =>
-        station.name.toLowerCase().startsWith(search.toLowerCase())
+        normalize(station.name).startsWith(normalize(search))
       );
       setFilteredStations(
-        filtered.sort((a, b) =>
-          a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-        )
+        filtered.length > 0
+          ? [
+              ...filtered.sort((a, b) =>
+                a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+              ),
+            ]
+          : []
       );
     } else {
       setFilteredStations([]);
@@ -95,7 +127,8 @@ function App() {
   const normalize = (str) =>
     str
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/(?<=[aeiouAEIOU])\u0301/g, "")
+      .normalize("NFC")
       .toLowerCase()
       .replace(/\s+/g, "");
 
@@ -134,7 +167,6 @@ function App() {
     setFilteredStations([]);
     setSearch("");
   };
-  const targetStation = setTargetStation("Bio Bío");
   return (
     <>
       <div
@@ -143,10 +175,11 @@ function App() {
         <HowToPlay
           toggleHowToPlay={toggleHowToPlay}
           stations={stations}
+          theme={theme}
         ></HowToPlay>
       </div>
       <div className={`about-container ${showAbout ? "open" : "closed"}`}>
-        <About toggleAbout={toggleAbout}></About>
+        <About toggleAbout={toggleAbout} theme={theme}></About>
       </div>
       <div
         className={`theme-panel-container ${
@@ -156,6 +189,7 @@ function App() {
         <Theme
           toggleThemePanel={toggleThemePanel}
           toggleTheme={toggleTheme}
+          theme={theme}
         ></Theme>
       </div>
       <div className={`menu-container ${showMenu ? "open" : "closed"}`}>
@@ -164,26 +198,12 @@ function App() {
           toggleHowToPlay={toggleHowToPlay}
           toggleAbout={toggleAbout}
           toggleThemePanel={toggleThemePanel}
+          theme={theme}
         ></Menu>
       </div>
       {(showMenu || showHowToPlay || showAbout || showThemePanel) && (
         <div className="backdrop"></div>
       )}
-      <textarea
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="provisional-input"
-        onKeyDown={(e) => {
-          if (
-            e.key === "Enter" &&
-            !e.shiftKey &&
-            filteredStations.length === 1
-          ) {
-            e.preventDefault();
-            makeGuess();
-          }
-        }}
-      ></textarea>
       <div className="main-area-container">
         <div className="game-area">
           {!showMenu && (
@@ -213,6 +233,7 @@ function App() {
               position: "relative",
             }}
           >
+            {!guesses.includes(targetStation) && (<div className="map-centre-animation"></div>)}
             <img
               className="map"
               src={map}
@@ -221,8 +242,12 @@ function App() {
                 position: "absolute",
                 width: "1705px",
                 height: "1705px",
-                left: "-815px", // Have to minus 100 from target station coordinates to make centered
-                top: "-645.5px",
+                left: targetStation
+                  ? `-${targetStation.coordinates[0] - 100}px`
+                  : "0px",
+                top: targetStation
+                  ? `-${targetStation.coordinates[1] - 100}px`
+                  : "0px",
               }}
             />
             {Object.entries(lineMap).map(([name, src]) => {
@@ -236,8 +261,12 @@ function App() {
                       position: "absolute",
                       width: "1705px",
                       height: "1705px",
-                      left: "-815px", // Have to minus 100 from target station coordinates to make centered
-                      top: "-645.5px",
+                      left: targetStation
+                        ? `-${targetStation.coordinates[0] - 100}px`
+                        : "0px",
+                      top: targetStation
+                        ? `-${targetStation.coordinates[1] - 100}px`
+                        : "0px",
                     }}
                   ></img>
                 );
@@ -254,8 +283,12 @@ function App() {
                       position: "absolute",
                       width: "1705px",
                       height: "1705px",
-                      left: "-815px", // Have to minus 100 from this and top to make centered
-                      top: "-645.5px",
+                      left: targetStation
+                        ? `-${targetStation.coordinates[0] - 100}px`
+                        : "0px",
+                      top: targetStation
+                        ? `-${targetStation.coordinates[1] - 100}px`
+                        : "0px",
                     }}
                   ></img>
                 );
@@ -270,7 +303,7 @@ function App() {
             guessedLines={guessedLines}
           ></GuessContainer>
         </div>
-        {filteredStations.length > 0 && (
+        {search.length > 0 && (
           <div className="stations-container">
             <StationContainer
               search={search}
@@ -280,12 +313,19 @@ function App() {
               guessedLines={guessedLines}
               targetStation={targetStation}
               guesses={guesses}
+              normalize={normalize}
             ></StationContainer>
           </div>
         )}
       </div>
       <div className="keyboard-container">
-        <Keyboard></Keyboard>
+        <Keyboard
+          search={search}
+          setSearch={setSearch}
+          filteredStations={filteredStations}
+          makeGuess={makeGuess}
+          normalize={normalize}
+        ></Keyboard>
       </div>
     </>
   );
