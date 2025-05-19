@@ -9,8 +9,9 @@ import { StationContainer } from "./components/StationContainer/StationContainer
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { updateUser, createUser, getUser } from "./services/users";
+import { getTargetStation } from "./services/stations";
 
 function App() {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -19,11 +20,53 @@ function App() {
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [showAbout, setAbout] = useState(false);
   const [search, setSearch] = useState("");
-  const [guesses, setGuesses] = useState([]);
+  const [guesses, setGuesses] = useState(() => {
+    const stored = localStorage.getItem("guesses");
+    if (stored) {
+      return JSON.parse(stored);
+    } else {
+      const emptyArray = [];
+      localStorage.setItem("guesses", JSON.stringify(emptyArray));
+      return emptyArray;
+    }
+  })
   const [stations, setStations] = useState([]);
   const [filteredStations, setFilteredStations] = useState([]);
-  const [guessedLines, setGuessedLines] = useState(new Set());
-  const [guessedStationNames, setGuessedStationNames] = useState([]);
+
+  const [guessedLines, setGuessedLines] = useState(() => {
+    const stored = localStorage.getItem("guessedLines");
+  
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return new Set(parsed);
+        } else {
+          console.warn("guessedLines in localStorage is not an array. Resetting.");
+        }
+      } catch (err) {
+        console.error("Failed to parse guessedLines from localStorage:", err);
+      }
+    }
+  
+    // If no valid stored value, initialise empty set and save it
+    const emptySet = new Set();
+    localStorage.setItem("guessedLines", JSON.stringify([...emptySet]));
+    return emptySet;
+  });
+
+const [guessedStationNames, setGuessedStationNames] = useState(() => {
+    const stored = localStorage.getItem("guessedStationNames");
+    if (stored) {
+      return JSON.parse(stored);
+    } else {
+      const emptyArray = [];
+      localStorage.setItem("guessedStationNames", JSON.stringify(emptyArray));
+      return emptyArray;
+    }
+  })  
+  const [targetStation, setTargetStation] = useState(null);
+  // const [totalJourney, setTotalJourney] = useState([])
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")
       ? localStorage.getItem("theme")
@@ -31,11 +74,21 @@ function App() {
       ? "dark"
       : "light"
   );
-  const targetStation = useMemo(() => {
-    return stations.find((station) => station.name === "Los Héroes");
-  }, [stations]);
 
-  // const [totalJourney, setTotalJourney] = useState([])
+  useEffect(() => {
+    async function fetchTarget() {
+      try {
+        const res = await getTargetStation(); // { station: {...} }
+        if (res?.station) {
+          setTargetStation(res.station);
+        }
+      } catch (err) {
+        console.error("Failed to load target station:", err);
+      }
+    }
+  
+    fetchTarget();
+  }, [targetStation]);
 
   // const updateTotalJourney = () => {
 
@@ -158,12 +211,21 @@ function App() {
   };
 
   const makeGuess = () => {
-    setGuesses([...guesses, filteredStations[0]]);
-    setGuessedLines((prev) => new Set([...prev, ...filteredStations[0].lines]));
-    setGuessedStationNames((prev) => [
-      ...prev,
-      normalize(filteredStations[0].name),
-    ]);
+    setGuesses((prev) => {
+      const updated = ([...prev, filteredStations[0]])
+      localStorage.setItem("guesses", JSON.stringify(updated))
+      return updated
+    });
+    setGuessedLines((prev) => {
+      const updated = new Set([...prev, ...filteredStations[0].lines]);
+      localStorage.setItem("guessedLines", JSON.stringify([...updated]));
+      return updated;
+    });
+    setGuessedStationNames((prev) => {
+      const updated = ([...prev, normalize(filteredStations[0].name)])
+      localStorage.setItem("guessedStationNames", JSON.stringify(updated))
+      return updated
+    });
     setFilteredStations([]);
     setSearch("");
   };

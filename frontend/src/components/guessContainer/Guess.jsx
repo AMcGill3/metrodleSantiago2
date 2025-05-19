@@ -129,6 +129,15 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
 
   const name = guess && guess.name ? guess.name : null;
   const lines = guess && guess.lines ? guess.lines : null;
+  
+  if (name && targetStation && name === targetStation.name) {
+    return (
+      <div className="correct-guess">
+        <div className="station-name-correct">{name}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
       <div className="left">
@@ -137,7 +146,7 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
           <div className="lines">
             {lines.map((line) => {
               const circle =
-                guessedLines.has(line) && !targetStation.lines.includes(line)
+                targetStation && guessedLines.has(line) && !targetStation.lines.includes(line)
                   ? wrongCircleMap[`circle${line}Wrong`]
                   : circleMap[`circle${line}`];
               return (

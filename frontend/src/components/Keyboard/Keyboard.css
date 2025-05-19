@@ -12,6 +12,10 @@
   margin-top: 1px;
 }
 
+.non-letter-button.clickable {
+  background-color: rgb(28, 63, 148);
+}
+
 .delete-symbol {
   height: 50%;
   margin-top: 5px;

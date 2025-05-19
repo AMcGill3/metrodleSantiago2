@@ -4,7 +4,6 @@ const cors = require("cors");
 
 const usersRouter = require("./routes/users");
 const stationsRouter = require("./routes/stations");
-const gamesRouter = require("./routes/games");
 
 const app = express();
 
@@ -19,7 +18,6 @@ app.use(bodyParser.json());
 // API Routes
 app.use("/users", usersRouter);
 app.use("/stations", stationsRouter);
-app.use("/games", gamesRouter);
 
 // 404 Handler
 app.use((_req, res) => {

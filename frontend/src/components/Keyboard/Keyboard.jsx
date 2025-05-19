@@ -34,7 +34,7 @@ export const Keyboard = ({ search, setSearch, filteredStations, makeGuess, norma
       </div>
       <div className="row">
         <button
-          className="non-letter-button"
+          className={`non-letter-button ${filteredStations.length === 1 ? "clickable" : ""}`}
           onClick={() => {if (
             filteredStations.length === 1
           ) {
@@ -53,7 +53,7 @@ export const Keyboard = ({ search, setSearch, filteredStations, makeGuess, norma
             normalize={normalize}
           />
         ))}
-        <button className="non-letter-button"
+        <button className={`non-letter-button ${search.length > 0 ? "clickable" : ""}`}
           onClick={() => setSearch(search.substring(0, search.length - 1))}>
           <img className="delete-symbol" src={deleteSymbol}></img>
         </button>

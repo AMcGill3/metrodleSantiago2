@@ -9,6 +9,26 @@
   margin-bottom: 2px;
 }
 
+.correct-guess {
+  background-color: var(--guess-card-guessed-bg);
+  color: var(--text-colour-guess-card-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  height: 46px;
+  border-radius: 6px;
+  padding: 0 4px;
+  margin-bottom: 2px;
+  justify-content: center;
+}
+
+.station-name-correct {
+  line-height: 36px;
+  font-size: 20px;
+  transform: translateY(-5px);
+}
+
 .guess-card.guessed {
   background-color: var(--guess-card-guessed-bg);
   color: var(--text-colour-guess-card-bg);

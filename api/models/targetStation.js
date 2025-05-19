@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 
 const targetStationSchema = new mongoose.Schema({
-  station: { type: mongoose.Schema.Types.ObjectId, ref: 'Station' },
+  key: { type: String, required: true },
+  value: { type: mongoose.Schema.Types.ObjectId, ref: 'Station' },
+  updatedAt: { type: Date, default: Date.now }
 });
 
-const targetStation = mongoose.model("TargetStation", targetStationSchema);
+const TargetStation = mongoose.model("TargetStation", targetStationSchema);
 
-module.exports = targetStation
+module.exports = TargetStation;

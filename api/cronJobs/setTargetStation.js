@@ -3,7 +3,7 @@ const Station = require('../models/station');
 const targetStation = require('../models/targetStation');
 
 function startTargetStationJob() {
-  cron.schedule('0 0 * * *', async () => {
+  cron.schedule("0 0 * * *", async () => {
     try {
       const [randomStation] = await Station.aggregate([{ $sample: { size: 1 } }]);
       if (randomStation) {

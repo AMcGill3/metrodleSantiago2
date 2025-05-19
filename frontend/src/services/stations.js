@@ -5,7 +5,7 @@ export async function getTargetStation() {
         method: "GET"
     };
 
-    const response = await fetch(`${BACKEND_URL}/station`, requestOptions);
+    const response = await fetch(`${BACKEND_URL}/stations`, requestOptions);
 
     if (response.status !== 200) {
         throw new Error("Unable to fetch station");
