@@ -16,6 +16,7 @@
   top: 4px;
   bottom: 4px;
   transform: translateX(-50%);
+  height: 600px;
 }
 
 .about-container.open {
@@ -31,7 +32,5 @@
 
 .exit-about-button {
   background-color: transparent;
-  margin-top: 10px;
-  margin-left: 90%;
   border: 0;
 }

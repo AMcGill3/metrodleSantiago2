@@ -1,10 +1,34 @@
 import "./Keyboard.css";
 import { Key } from "./Key";
 import deleteSymbol from "../../assets/deleteSymbol.png";
-export const Keyboard = ({ search, setSearch, filteredStations, makeGuess, normalize }) => {
+import { useEffect } from "react";
+import { getUser } from "../../services/users";
+
+export const Keyboard = ({ search, setSearch, filteredStations, setFilteredStations, setGuesses, setGuessedLines, setGuessedStationNames, normalize, showMenu, today }) => {
   const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
   const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"];
   const row3 = ["Z", "X", "C", "V", "B", "N", "M"];
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (showMenu === false && getUser.lastPlayed !== today) {
+        if (/^[a-zA-ZñÑ]$/.test(e.key) && !e.metaKey && !e.shiftKey) {
+          setSearch(search + e.key);
+        }
+        if (e.key === "Backspace" || e.key === "Delete") {
+          setSearch(search.substring(0, search.length - 1));
+        }
+        if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1) {
+          submitGuess();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showMenu, search, filteredStations]);
 
   return (
     <div className="keyboard">

@@ -14,57 +14,18 @@ import { updateUser, createUser, getUser } from "./services/users";
 import { getTargetStation } from "./services/stations";
 
 function App() {
+  const today = new Date().toDateString();
   const [isNewUser, setIsNewUser] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [showAbout, setAbout] = useState(false);
   const [search, setSearch] = useState("");
-  const [guesses, setGuesses] = useState(() => {
-    const stored = localStorage.getItem("guesses");
-    if (stored) {
-      return JSON.parse(stored);
-    } else {
-      const emptyArray = [];
-      localStorage.setItem("guesses", JSON.stringify(emptyArray));
-      return emptyArray;
-    }
-  })
   const [stations, setStations] = useState([]);
   const [filteredStations, setFilteredStations] = useState([]);
-
-  const [guessedLines, setGuessedLines] = useState(() => {
-    const stored = localStorage.getItem("guessedLines");
-  
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return new Set(parsed);
-        } else {
-          console.warn("guessedLines in localStorage is not an array. Resetting.");
-        }
-      } catch (err) {
-        console.error("Failed to parse guessedLines from localStorage:", err);
-      }
-    }
-  
-    // If no valid stored value, initialise empty set and save it
-    const emptySet = new Set();
-    localStorage.setItem("guessedLines", JSON.stringify([...emptySet]));
-    return emptySet;
-  });
-
-const [guessedStationNames, setGuessedStationNames] = useState(() => {
-    const stored = localStorage.getItem("guessedStationNames");
-    if (stored) {
-      return JSON.parse(stored);
-    } else {
-      const emptyArray = [];
-      localStorage.setItem("guessedStationNames", JSON.stringify(emptyArray));
-      return emptyArray;
-    }
-  })  
+  const [guesses, setGuesses] = useState([]);
+  const [guessedLines, setGuessedLines] = useState(new Set());
+  const [guessedStationNames, setGuessedStationNames] = useState([]);
   const [targetStation, setTargetStation] = useState(null);
   // const [totalJourney, setTotalJourney] = useState([])
   const [theme, setTheme] = useState(
@@ -74,11 +35,45 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
       ? "dark"
       : "light"
   );
+  useEffect(() => {
+    async function initializeUser() {
+      let username = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("userId="))
+        ?.split("=")[1];
+
+      if (!username) {
+        setIsNewUser(true);
+        try {
+          username = await createUser();
+          document.cookie = `userId=${username}; path=/;`;
+          console.log("cookie set", document.cookie);
+          setShowHowToPlay(true);
+        } catch (err) {
+          console.error("Failed to create user:", err);
+          return;
+        }
+      }
+
+      try {
+        const userData = await getUser(username);
+        if (userData?.game) {
+          setGuesses(userData.game.guesses || []);
+          setGuessedLines(new Set(userData.game.guessedLines || []));
+          setGuessedStationNames(userData.game.guessedStationNames || []);
+        }
+      } catch (err) {
+        console.error("Failed to load user game data:", err);
+      }
+    }
+
+    initializeUser();
+  }, []);
 
   useEffect(() => {
     async function fetchTarget() {
       try {
-        const res = await getTargetStation(); // { station: {...} }
+        const res = await getTargetStation();
         if (res?.station) {
           setTargetStation(res.station);
         }
@@ -86,7 +81,7 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
         console.error("Failed to load target station:", err);
       }
     }
-  
+
     fetchTarget();
   }, [targetStation]);
 
@@ -120,28 +115,6 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (showMenu === false) {
-        if (/^[a-zA-ZñÑ]$/.test(e.key) && !e.metaKey && !e.shiftKey) {
-          setSearch(search + e.key);
-        }
-        if (e.key === "Backspace" || e.key === "Delete") {
-          setSearch(search.substring(0, search.length - 1));
-        }
-        if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1) {
-          makeGuess();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showMenu, search, filteredStations]);
-
-  useEffect(() => {
     if (search.trim() !== "") {
       const filtered = stations.filter((station) =>
         normalize(station.name).startsWith(normalize(search))
@@ -160,16 +133,20 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
     }
   }, [search, stations]);
 
+  // End game procedure
   useEffect(() => {
-    if (!document.cookie.includes("userId")) {
-      setIsNewUser(true);
-      createUser().then((username) => {
-        document.cookie = `userId=${username}; path=/;`;
-        console.log("cookie set", document.cookie);
-      });
-      setShowHowToPlay(true);
+    const guesses = localStorage.getItem("guesses");
+    const username = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userId="))
+      ?.split("=")[1];
+
+    if (!guesses.includes(targetStation) && guesses.length === 6) {
+      updateUser(username, false);
+    } else if (guesses.includes(targetStation) && guesses.length <= 6) {
+      updateUser();
     }
-  }, []);
+  }, [guesses, targetStation]);
 
   useEffect(() => {
     if (isNewUser && !showHowToPlay) {
@@ -209,12 +186,12 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
       toggleMenu();
     }
   };
-
-  const makeGuess = () => {
+  // do this in keyboard instead, also pass in setters. Conditionally render keyboard component with if (!getUser.lastPlayed === today)
+  const submitGuess = () => {
     setGuesses((prev) => {
-      const updated = ([...prev, filteredStations[0]])
-      localStorage.setItem("guesses", JSON.stringify(updated))
-      return updated
+      const updated = [...prev, filteredStations[0]];
+      localStorage.setItem("guesses", JSON.stringify(updated));
+      return updated;
     });
     setGuessedLines((prev) => {
       const updated = new Set([...prev, ...filteredStations[0].lines]);
@@ -222,13 +199,14 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
       return updated;
     });
     setGuessedStationNames((prev) => {
-      const updated = ([...prev, normalize(filteredStations[0].name)])
-      localStorage.setItem("guessedStationNames", JSON.stringify(updated))
-      return updated
+      const updated = [...prev, normalize(filteredStations[0].name)];
+      localStorage.setItem("guessedStationNames", JSON.stringify(updated));
+      return updated;
     });
     setFilteredStations([]);
     setSearch("");
   };
+
   return (
     <>
       <div
@@ -295,7 +273,9 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
               position: "relative",
             }}
           >
-            {!guesses.includes(targetStation) && (<div className="map-centre-animation"></div>)}
+            {!guesses.includes(targetStation) && (
+              <div className="map-centre-animation"></div>
+            )}
             <img
               className="map"
               src={map}
@@ -385,8 +365,13 @@ const [guessedStationNames, setGuessedStationNames] = useState(() => {
           search={search}
           setSearch={setSearch}
           filteredStations={filteredStations}
-          makeGuess={makeGuess}
+          setFilteredStations={setFilteredStations}
+          setGuesses={setGuesses}
+          setGuessedLines={setGuessedLines}
+          setGuessedStationNames={setGuessedStationNames}
           normalize={normalize}
+          showMenu={showMenu}
+          today={today}
         ></Keyboard>
       </div>
     </>

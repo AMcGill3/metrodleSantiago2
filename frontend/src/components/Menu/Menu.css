@@ -51,3 +51,22 @@
   align-items: center;
   margin-left: 15px;
 }
+
+
+.logo {
+  height: 110px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.menuComponentTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+}

@@ -5,24 +5,26 @@ import map from "../../assets/metroMapBackground.svg";
 import lineMap from "../../utils/loadLinesSVGs";
 import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
+import logo from "../../assets/pageLogo.svg";
 
 export const HowToPlay = ({ toggleHowToPlay, stations, theme }) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
   };
 
-  const exit = theme === "light"
-  ? exitMenu
-  : exitMenuDark
+  const exit = theme === "light" ? exitMenu : exitMenuDark;
 
-  const santalucía = getStation("Santa Lucía")
-  const universidadCatólica = getStation("Universidad Católica")
+  const santalucía = getStation("Santa Lucía");
+  const universidadCatólica = getStation("Universidad Católica");
   return (
     <div className="how-to-play">
-      <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
-        <img src={exit} className="exit-menu-img"></img>
-      </button>
-      <h1>Cómo Jugar</h1>
+      <div className="header">
+        <img src={logo} className="logo"></img>
+        <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
+          <img src={exit} className="exit-menu-img"></img>
+        </button>
+        <h1 className="menuComponentTitle">Cómo Jugar</h1>
+      </div>
       <p>
         El objeto de Metrodle es adivinar tu destino en el metro de Santiago. El
         mapa en pantalla tiene una sección en zoom de tu trayecto, con la
@@ -139,7 +141,12 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme }) => {
         El resultado de la suposición revelará a cuantas paradas estas de tu
         destino y en que dirección estas de tu suposición.
       </p>
-      <Guess guessed={true} guess={santalucía} targetStation={universidadCatólica} guessedLines={new Set ("1")}></Guess>
+      <Guess
+        guessed={true}
+        guess={santalucía}
+        targetStation={universidadCatólica}
+        guessedLines={new Set("1")}
+      ></Guess>
     </div>
   );
 };

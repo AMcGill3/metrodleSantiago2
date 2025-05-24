@@ -1,12 +1,10 @@
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export async function getUser(token) {
+export async function getUser(username) {
   try {
     const requestOptions = {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      body: JSON.stringify({ username }),
     };
     const response = await fetch(`${BACKEND_URL}/users`, requestOptions);
 
@@ -20,14 +18,16 @@ export async function getUser(token) {
     console.log(err);
   }
 }
-export async function updateUser(data) {
+export async function updateUser(username, win = null, guessNumber = null) {
   try {
-    const response = await fetch(`${BACKEND_URL}/users`, {
-      method: "PUT",
+    const response = await fetch(`${BACKEND_URL}/users/update`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        action: "updateUser",
+      }),
     });
 
     if (!response.ok) {
@@ -61,6 +61,33 @@ export async function createUser() {
     const data = await response.json();
     console.log("Generated username:", data);
     return data.username; // Return just the username string
+  } catch (err) {
+    console.error("Create Error:", err.message);
+    throw err;
+  }
+}
+
+export async function makeGuess(username, station) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/users/guess`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        guess: {
+          name: station.name,
+          lines: station.lines,
+          coordinates: station.coordinates,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.message || "Failed to make guess");
+    }
   } catch (err) {
     console.error("Create Error:", err.message);
     throw err;
