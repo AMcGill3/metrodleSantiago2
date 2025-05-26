@@ -15,7 +15,7 @@ import { updateUser, createUser, getUser } from "./services/users";
 import { getTargetStation } from "./services/stations";
 
 function App() {
-  const [today] = useState(() => new Date());
+  const [today] = useState(() => new Date().setHours(0, 0, 0, 0));
   const [showMenu, setShowMenu] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
@@ -61,7 +61,7 @@ function App() {
           setGuesses(userData.game.guesses || []);
           setGuessedLines(new Set(userData.game.guessedLines || []));
           setGuessedStationNames(userData.game.guessedStationNames || []);
-          setLastPlayed(userData.lastPlayed);
+          setLastPlayed(new Date(userData.lastPlayed).setHours(0, 0, 0, 0));
         }
       } catch (err) {
         console.error("Failed to load user game data:", err);
@@ -358,8 +358,7 @@ function App() {
           </div>
         )}
       </div>
-      {!lastPlayed === today ||
-        (lastPlayed == null && (
+      {!lastPlayed === today || !lastPlayed && (
           <div className="keyboard-container">
             <Keyboard
               search={search}
@@ -374,7 +373,7 @@ function App() {
               today={today}
             ></Keyboard>
           </div>
-        ))}
+        )}
     </>
   );
 }

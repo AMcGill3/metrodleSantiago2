@@ -33,8 +33,7 @@ async function getUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  const dateToday = new Date(req.body.today);
-  dateToday.setHours(0, 0, 0, 0);
+  const dateToday = req.body.today;
   try {
     const user = await User.findOne({
       _id: new mongoose.Types.ObjectId(req.body.user),
