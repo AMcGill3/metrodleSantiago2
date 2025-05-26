@@ -29,7 +29,7 @@ body {
   border-radius: 50%;
   background-color: rgba(0, 192, 58, 0.7); /* Example: red circle with 70% opacity */
   animation: pulse 3s infinite;
-  z-index: 1000;
+  z-index: 10;
   transform: translate(-50%, -50%);
 }
 
@@ -89,7 +89,7 @@ body {
   height: 100vh;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 5;
+  z-index: 1;
   pointer-events: none;
 }
 

@@ -134,6 +134,7 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
     return (
       <div className="correct-guess">
         <div className="station-name-correct">{name}</div>
+        <h6 className="correct-guess-extra-message">Deje bajar antes de subir</h6>
       </div>
     );
   }

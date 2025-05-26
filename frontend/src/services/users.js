@@ -4,9 +4,9 @@ export async function getUser(username) {
   try {
     const requestOptions = {
       method: "GET",
-      body: JSON.stringify({ username }),
+      credentials: "include",
     };
-    const response = await fetch(`${BACKEND_URL}/users`, requestOptions);
+    const response = await fetch(`${BACKEND_URL}/users?username=${encodeURIComponent(username)}`, requestOptions);
 
     if (response.status !== 200) {
       throw new Error("Unable to fetch users");
@@ -18,7 +18,8 @@ export async function getUser(username) {
     console.log(err);
   }
 }
-export async function updateUser(username, win = null, guessNumber = null) {
+
+export async function updateUser(username, win, today, guessNumber = null) {
   try {
     const response = await fetch(`${BACKEND_URL}/users/update`, {
       method: "PATCH",
@@ -26,7 +27,10 @@ export async function updateUser(username, win = null, guessNumber = null) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        action: "updateUser",
+        user: username,
+        win: win,
+        today: today,
+        guessNumber: guessNumber
       }),
     });
 
@@ -60,7 +64,7 @@ export async function createUser() {
 
     const data = await response.json();
     console.log("Generated username:", data);
-    return data.username; // Return just the username string
+    return data.username;
   } catch (err) {
     console.error("Create Error:", err.message);
     throw err;

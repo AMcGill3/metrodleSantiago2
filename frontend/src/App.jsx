@@ -6,6 +6,7 @@ import { About } from "./components/About/About";
 import { Menu } from "./components/Menu/Menu";
 import { Theme } from "./components/Theme/Theme";
 import { StationContainer } from "./components/StationContainer/StationContainer";
+import { CorrectGuess } from "./components/correctGuess/correctGuess";
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
@@ -14,8 +15,7 @@ import { updateUser, createUser, getUser } from "./services/users";
 import { getTargetStation } from "./services/stations";
 
 function App() {
-  const today = new Date().toDateString();
-  const [isNewUser, setIsNewUser] = useState(false);
+  const [today] = useState(() => new Date());
   const [showMenu, setShowMenu] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
@@ -27,7 +27,8 @@ function App() {
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
   const [targetStation, setTargetStation] = useState(null);
-  // const [totalJourney, setTotalJourney] = useState([])
+  const [correctStationPopUp, setCorrectStationPopUp] = useState(false);
+  const [lastPlayed, setLastPlayed] = useState(null);
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")
       ? localStorage.getItem("theme")
@@ -37,16 +38,15 @@ function App() {
   );
   useEffect(() => {
     async function initializeUser() {
-      let username = document.cookie
+      let user = document.cookie
         .split("; ")
         .find((row) => row.startsWith("userId="))
         ?.split("=")[1];
 
-      if (!username) {
-        setIsNewUser(true);
+      if (!user) {
         try {
-          username = await createUser();
-          document.cookie = `userId=${username}; path=/;`;
+          user = await createUser();
+          document.cookie = `userId=${user}; path=/;`;
           console.log("cookie set", document.cookie);
           setShowHowToPlay(true);
         } catch (err) {
@@ -56,11 +56,12 @@ function App() {
       }
 
       try {
-        const userData = await getUser(username);
+        const userData = await getUser(user);
         if (userData?.game) {
           setGuesses(userData.game.guesses || []);
           setGuessedLines(new Set(userData.game.guessedLines || []));
           setGuessedStationNames(userData.game.guessedStationNames || []);
+          setLastPlayed(userData.lastPlayed);
         }
       } catch (err) {
         console.error("Failed to load user game data:", err);
@@ -69,21 +70,53 @@ function App() {
 
     initializeUser();
   }, []);
-
-  useEffect(() => {
-    async function fetchTarget() {
-      try {
-        const res = await getTargetStation();
-        if (res?.station) {
-          setTargetStation(res.station);
+  
+    useEffect(() => {
+      async function fetchTarget() {
+        try {
+          const res = await getTargetStation();
+          if (res?.station) {
+            setTargetStation(res.station);
+          }
+        } catch (err) {
+          console.error("Failed to load target station:", err);
         }
-      } catch (err) {
-        console.error("Failed to load target station:", err);
       }
+  
+      fetchTarget();
+    }, []);
+
+  // end game logic
+  useEffect(() => {
+    if (!targetStation) return;
+
+    if (
+      (guessedStationNames.includes(targetStation.name) && lastPlayed !== today) ||
+      (guessedStationNames.length === 6 &&
+        !guessedStationNames.includes(targetStation.name) && lastPlayed !== today)
+    ) {
+      setCorrectStationPopUp(true);
+      setTimeout(() => {
+        setCorrectStationPopUp(false);
+      }, 4000);
+      setLastPlayed(today);
     }
 
-    fetchTarget();
-  }, [targetStation]);
+    const username = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userId="))
+      ?.split("=")[1];
+    if (
+      guessedStationNames.includes(targetStation.name)
+    ) {
+      updateUser(username, true, today, guessedStationNames.length);
+    } else if (
+      guessedStationNames.length === 6 &&
+      !guessedStationNames.includes(targetStation)
+    ) {
+      updateUser(username, false, today);
+    }
+  }, [guessedStationNames]);
 
   // const updateTotalJourney = () => {
 
@@ -114,6 +147,7 @@ function App() {
       .catch((err) => console.error("Failed to load stations", err));
   }, []);
 
+  // Could move this to station container
   useEffect(() => {
     if (search.trim() !== "") {
       const filtered = stations.filter((station) =>
@@ -133,34 +167,14 @@ function App() {
     }
   }, [search, stations]);
 
-  // End game procedure
-  useEffect(() => {
-    const guesses = localStorage.getItem("guesses");
-    const username = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("userId="))
-      ?.split("=")[1];
-
-    if (!guesses.includes(targetStation) && guesses.length === 6) {
-      updateUser(username, false);
-    } else if (guesses.includes(targetStation) && guesses.length <= 6) {
-      updateUser();
-    }
-  }, [guesses, targetStation]);
-
-  useEffect(() => {
-    if (isNewUser && !showHowToPlay) {
-      setIsNewUser(false);
-    }
-  }, [isNewUser, showHowToPlay]);
-
-  const normalize = (str) =>
-    str
+  function normalize(str) {
+    return str
       .normalize("NFD")
       .replace(/(?<=[aeiouAEIOU])\u0301/g, "")
       .normalize("NFC")
       .toLowerCase()
       .replace(/\s+/g, "");
+  }
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -186,27 +200,6 @@ function App() {
       toggleMenu();
     }
   };
-  // do this in keyboard instead, also pass in setters. Conditionally render keyboard component with if (!getUser.lastPlayed === today)
-  const submitGuess = () => {
-    setGuesses((prev) => {
-      const updated = [...prev, filteredStations[0]];
-      localStorage.setItem("guesses", JSON.stringify(updated));
-      return updated;
-    });
-    setGuessedLines((prev) => {
-      const updated = new Set([...prev, ...filteredStations[0].lines]);
-      localStorage.setItem("guessedLines", JSON.stringify([...updated]));
-      return updated;
-    });
-    setGuessedStationNames((prev) => {
-      const updated = [...prev, normalize(filteredStations[0].name)];
-      localStorage.setItem("guessedStationNames", JSON.stringify(updated));
-      return updated;
-    });
-    setFilteredStations([]);
-    setSearch("");
-  };
-
   return (
     <>
       <div
@@ -241,7 +234,7 @@ function App() {
           theme={theme}
         ></Menu>
       </div>
-      {(showMenu || showHowToPlay || showAbout || showThemePanel) && (
+      {(showMenu || showHowToPlay || showAbout || showThemePanel || correctStationPopUp) && (
         <div className="backdrop"></div>
       )}
       <div className="main-area-container">
@@ -338,6 +331,11 @@ function App() {
             })}
           </div>
         </div>
+        {correctStationPopUp && (
+          <div className="correct-guess-container">
+            <CorrectGuess targetStation={targetStation}></CorrectGuess>
+          </div>
+        )}
         <div className="guess-list-container">
           <GuessContainer
             guesses={guesses}
@@ -360,20 +358,23 @@ function App() {
           </div>
         )}
       </div>
-      <div className="keyboard-container">
-        <Keyboard
-          search={search}
-          setSearch={setSearch}
-          filteredStations={filteredStations}
-          setFilteredStations={setFilteredStations}
-          setGuesses={setGuesses}
-          setGuessedLines={setGuessedLines}
-          setGuessedStationNames={setGuessedStationNames}
-          normalize={normalize}
-          showMenu={showMenu}
-          today={today}
-        ></Keyboard>
-      </div>
+      {!lastPlayed === today ||
+        (lastPlayed == null && (
+          <div className="keyboard-container">
+            <Keyboard
+              search={search}
+              setSearch={setSearch}
+              filteredStations={filteredStations}
+              setFilteredStations={setFilteredStations}
+              setGuesses={setGuesses}
+              setGuessedLines={setGuessedLines}
+              setGuessedStationNames={setGuessedStationNames}
+              normalize={normalize}
+              showMenu={showMenu}
+              today={today}
+            ></Keyboard>
+          </div>
+        ))}
     </>
   );
 }

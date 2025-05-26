@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const User = require("../models/user");
 
 function startClearGameJob() {
-  CRON_TZ = America / Santiago;
+  CRON_TZ = "America/Santiago";
   cron.schedule("0 0 * * *", async () => {
     try {
       await User.updateMany(

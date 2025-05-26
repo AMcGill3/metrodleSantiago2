@@ -1,8 +1,6 @@
 const User = require("../models/user");
 const mongoose = require("mongoose");
 
-const { normalize } = require("../../frontend/src/App/normalize");
-
 async function createUser(req, res) {
   try {
     const user = new User();
@@ -18,38 +16,76 @@ async function createUser(req, res) {
 
 async function getUser(req, res) {
   try {
-    const foundUser = await User.findOne({ _id: new mongoose.Types.ObjectId(req.username) });
+    const foundUser = await User.findOne({
+      _id: new mongoose.Types.ObjectId(req.query.username),
+    });
     res.status(200).json({
+      game: foundUser.game,
       winningStreak: foundUser.winningStreak,
       gamesPlayed: foundUser.gamesPlayed,
-      avgGuesses: foundUser.avgGuesses,
       winsInXGuesses: foundUser.winsInXGuesses,
       lastPlayed: foundUser.lastPlayed,
-      game: foundUser.game,
+      maxStreak: foundUser.maxStreak,
     });
   } catch (err) {
     return res.status(400).json({ message: "User not found" });
   }
 }
-// function to update stats once user's completed a game
+
 async function updateUser(req, res) {
+  const dateToday = new Date(req.body.today);
+  dateToday.setHours(0, 0, 0, 0);
   try {
-    const user = await User.findOne({ _id: new mongoose.Types.ObjectId(req.username) });
+    const user = await User.findOne({
+      _id: new mongoose.Types.ObjectId(req.body.user),
+    });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    user.gamesPlayed += 1;
 
-    const today = new Date().toDateString();
-    user.lastPlayed = today
+    if (req.body.win === true && req.body.guessNumber !== null) {
+      user.winsInXGuesses[req.body.guessNumber - 1] += 1;
+      user.markModified("winsInXGuesses");
+
+
+      if (user.lastPlayed) {
+        const lastPlayed = new Date(user.lastPlayed);
+        lastPlayed.setHours(0, 0, 0, 0);
+
+        const difference = (dateToday - lastPlayed) / 86400000;
+        if (difference === 1) {
+          if (user.maxStreak === user.winningStreak) {
+            user.maxStreak += 1;
+          }
+          user.winningStreak += 1;
+        } else {
+          user.winningStreak = 1;
+        }
+      } else {
+        user.winningStreak = 1;
+        user.maxStreak = 1;
+      }
+    } else {
+      user.winningStreak = 0;
+    }
+    user.lastPlayed = dateToday;
+
+    await user.save();
+    return res.status(200).json({ message: "user updated" });
   } catch (err) {
-    return res.status(400).json({ message: "Could not update user" });
+    return res
+      .status(400)
+      .json({ message: "Could not update user", error: err.message });
   }
 }
 
 async function makeGuess(req, res) {
   try {
     const { guess } = req.body;
-    const user = await User.findOne({ _id: new mongoose.Types.ObjectId(req.username) });
+    const user = await User.findOne({
+      _id: new mongoose.Types.ObjectId(req.body.username),
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -62,6 +98,8 @@ async function makeGuess(req, res) {
     user.game.guessedLines = [
       ...new Set([...user.game.guessedLines, ...guess.lines]),
     ];
+
+    user.markModified("game");
 
     await user.save();
 

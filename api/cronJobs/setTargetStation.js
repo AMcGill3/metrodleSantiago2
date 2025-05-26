@@ -3,7 +3,7 @@ const Station = require("../models/station");
 const targetStation = require("../models/targetStation");
 
 function startTargetStationJob() {
-  CRON_TZ = America / Santiago;
+  CRON_TZ = "America/Santiago";
   cron.schedule("0 0 * * *", async () => {
     try {
       const [randomStation] = await Station.aggregate([

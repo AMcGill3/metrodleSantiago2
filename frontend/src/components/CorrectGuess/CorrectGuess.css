@@ -1,0 +1,12 @@
+.correct-guess-container {
+  z-index: 100;
+  background-color: var(--menu-bg);
+  color: var(--text-colour-bg);
+  transition: top 0.2s ease, opacity 0.2s ease;
+  border-radius: 10px;
+  border: 1px solid rgb(0, 0, 0);
+  height: 120px;
+  line-height: 0.7;
+}
+
+
