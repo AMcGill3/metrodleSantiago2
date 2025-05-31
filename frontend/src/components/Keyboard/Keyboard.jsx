@@ -2,7 +2,7 @@ import "./Keyboard.css";
 import { Key } from "./Key";
 import deleteSymbol from "../../assets/deleteSymbol.png";
 import { useEffect } from "react";
-import { getUser, makeGuess } from "../../services/users";
+import { makeGuess } from "../../services/users.js";
 
 export const Keyboard = ({
   search,
@@ -15,19 +15,32 @@ export const Keyboard = ({
   normalize,
   showMenu,
   today,
+  user,
 }) => {
   const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
   const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"];
   const row3 = ["Z", "X", "C", "V", "B", "N", "M"];
 
+  const guessProtocol = () => {
+    const guess = filteredStations[0];
+    makeGuess(user?.username, guess);
+    setGuesses((prevGuesses) => {
+      setGuessedLines((prevLines) => {
+        const newLines = new Set(prevLines);
+        guess.lines.forEach((line) => newLines.add(line));
+        return newLines;
+      });
+      setGuessedStationNames((prev) => [...prev, normalize(guess.name)]);
+      setFilteredStations([]);
+      setSearch("");
+
+      return [...prevGuesses, guess];
+    });
+  };
+
   useEffect(() => {
     const handleKeyDown = async (e) => {
-      const username = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId"))
-        ?.split("=")[1];
-      const user = await getUser(username);
-      if (showMenu === false && user.lastPlayed !== today) {
+      if (showMenu === false && user?.lastPlayed !== today) {
         if (/^[a-zA-ZñÑ]$/.test(e.key) && !e.metaKey && !e.shiftKey) {
           setSearch(search + e.key);
         }
@@ -35,20 +48,7 @@ export const Keyboard = ({
           setSearch(search.substring(0, search.length - 1));
         }
         if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1) {
-          const guess = filteredStations[0];
-          makeGuess(username, guess);
-          setGuesses((prevGuesses) => {
-            setGuessedLines((prevLines) => {
-              const newLines = new Set(prevLines);
-              guess.lines.forEach((line) => newLines.add(line));
-              return newLines;
-            });
-            setGuessedStationNames((prev) => [...prev, guess.name]);
-            setFilteredStations([]);
-            setSearch("");
-
-            return [...prevGuesses, guess];
-          });
+          guessProtocol();
         }
       }
     };
@@ -93,7 +93,7 @@ export const Keyboard = ({
           }`}
           onClick={() => {
             if (filteredStations.length === 1) {
-              makeGuess();
+              guessProtocol();
             }
           }}
         >

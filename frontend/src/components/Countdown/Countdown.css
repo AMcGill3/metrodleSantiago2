@@ -1,0 +1,17 @@
+.left-countdown {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.right-countdown {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.countdown-container {
+  padding-top: 10px;
+}

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose"
 
 const GuessSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const GuessSchema = new mongoose.Schema(
 
 const UserSchema = new mongoose.Schema({
   lastPlayed: { type: Date },
-  winningStreak: { type: Number, default: 0 },
+  streak: { type: Number, default: 0 },
   gamesPlayed: { type: Number, default: 0 },
   maxStreak: { type: Number, default: 0 },
   winsInXGuesses: {
@@ -27,4 +27,4 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-module.exports = User;
+export default User;

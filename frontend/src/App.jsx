@@ -5,18 +5,31 @@ import { HowToPlay } from "./components/HowToPlay/HowToPlay";
 import { About } from "./components/About/About";
 import { Menu } from "./components/Menu/Menu";
 import { Theme } from "./components/Theme/Theme";
+import { Stats } from "./components/Stats/Stats";
 import { StationContainer } from "./components/StationContainer/StationContainer";
 import { CorrectGuess } from "./components/correctGuess/correctGuess";
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
+import nationalRailStations from "../src/assets/NationalRailStations.svg";
 import { useState, useEffect } from "react";
 import { updateUser, createUser, getUser } from "./services/users";
 import { getTargetStation } from "./services/stations";
+import { normalize } from "../../normalize.js";
+import { buildGraph, bfsDistance } from "./utils/graphUtils.js";
+import { loadGraphFromTGF } from "../src/utils/loadGraphFromTGF.js";
+import { Countdown } from "./components/Countdown/Countdown.jsx";
+import { FullMap } from "./components/fullMap/fullMap.jsx";
+import fullMapButton from "../src/assets/fullMapButton.svg";
 
 function App() {
-  const [today] = useState(() => new Date().setHours(0, 0, 0, 0));
+  const [today] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
   const [showMenu, setShowMenu] = useState(false);
+  const [showFullMap, setShowFullMap] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [showAbout, setAbout] = useState(false);
@@ -29,6 +42,8 @@ function App() {
   const [targetStation, setTargetStation] = useState(null);
   const [correctStationPopUp, setCorrectStationPopUp] = useState(false);
   const [lastPlayed, setLastPlayed] = useState(null);
+  const [showStats, setShowStats] = useState(false);
+  const [user, setUser] = useState(null);
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")
       ? localStorage.getItem("theme")
@@ -36,17 +51,46 @@ function App() {
       ? "dark"
       : "light"
   );
+  const [nodes, setNodes] = useState(null);
+  const [graph, setGraph] = useState(null);
+
+  const compareLastPlayed = () => {
+    if (lastPlayed) {
+      return lastPlayed?.getTime() === today?.getTime();
+    }
+  };
+
+  const checkWin = () => {
+    return guessedStationNames.includes(normalize(targetStation.name));
+  };
+
+  useEffect(() => {
+    const fetchGraph = async () => {
+      const { nodes, edges } = await loadGraphFromTGF("adjacencyList.tgf");
+      setNodes(nodes);
+      setGraph(buildGraph(edges));
+    };
+
+    fetchGraph();
+  }, []);
+
+  const nameToId =
+    nodes &&
+    Object.entries(nodes).reduce((acc, [id, name]) => {
+      acc[name] = Number(id);
+      return acc;
+    }, {});
   useEffect(() => {
     async function initializeUser() {
-      let user = document.cookie
+      let username = document.cookie
         .split("; ")
         .find((row) => row.startsWith("userId="))
         ?.split("=")[1];
 
-      if (!user) {
+      if (!username) {
         try {
-          user = await createUser();
-          document.cookie = `userId=${user}; path=/;`;
+          username = await createUser();
+          document.cookie = `userId=${username}; path=/;`;
           console.log("cookie set", document.cookie);
           setShowHowToPlay(true);
         } catch (err) {
@@ -56,12 +100,15 @@ function App() {
       }
 
       try {
-        const userData = await getUser(user);
+        const userData = await getUser(username);
+        setUser(userData);
         if (userData?.game) {
           setGuesses(userData.game.guesses || []);
           setGuessedLines(new Set(userData.game.guessedLines || []));
           setGuessedStationNames(userData.game.guessedStationNames || []);
-          setLastPlayed(new Date(userData.lastPlayed).setHours(0, 0, 0, 0));
+          setLastPlayed(
+            new Date(new Date(userData.lastPlayed).setHours(0, 0, 0, 0))
+          );
         }
       } catch (err) {
         console.error("Failed to load user game data:", err);
@@ -70,70 +117,72 @@ function App() {
 
     initializeUser();
   }, []);
-  
-    useEffect(() => {
-      async function fetchTarget() {
-        try {
-          const res = await getTargetStation();
-          if (res?.station) {
-            setTargetStation(res.station);
-          }
-        } catch (err) {
-          console.error("Failed to load target station:", err);
+
+  useEffect(() => {
+    if (compareLastPlayed()) {
+      setShowStats(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function fetchTarget() {
+      try {
+        const res = await getTargetStation();
+        if (res?.station) {
+          setTargetStation(res.station);
         }
+      } catch (err) {
+        console.error("Failed to load target station:", err);
       }
-  
-      fetchTarget();
-    }, []);
+    }
+
+    fetchTarget();
+  }, []);
+
+  const stopsFromTarget = (stationName) => {
+    if (
+      !graph ||
+      !targetStation ||
+      !nameToId?.[stationName] ||
+      !nameToId?.[targetStation.name]
+    ) {
+      return null;
+    }
+    return bfsDistance(
+      graph,
+      nameToId[stationName],
+      nameToId[targetStation.name]
+    );
+  };
 
   // end game logic
   useEffect(() => {
     if (!targetStation) return;
 
     if (
-      (guessedStationNames.includes(targetStation.name) && lastPlayed !== today) ||
-      (guessedStationNames.length === 6 &&
-        !guessedStationNames.includes(targetStation.name) && lastPlayed !== today)
+      !compareLastPlayed() &&
+      (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
     ) {
       setCorrectStationPopUp(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setCorrectStationPopUp(false);
+        const updatedUser = await getUser(user.username);
+        setUser(updatedUser);
+        setShowStats(true);
+        setLastPlayed(today);
       }, 4000);
-      setLastPlayed(today);
     }
 
-    const username = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("userId="))
-      ?.split("=")[1];
-    if (
-      guessedStationNames.includes(targetStation.name)
-    ) {
-      updateUser(username, true, today, guessedStationNames.length);
+    if (checkWin() && !compareLastPlayed()) {
+      updateUser(user?.username, true, today, guessedStationNames.length);
     } else if (
       guessedStationNames.length === 6 &&
-      !guessedStationNames.includes(targetStation)
+      !checkWin() &&
+      !compareLastPlayed()
     ) {
-      updateUser(username, false, today);
+      updateUser(user?.username, false, today);
     }
   }, [guessedStationNames]);
-
-  // const updateTotalJourney = () => {
-
-  // }
-  const toggleTheme = (mode) => {
-    if (mode === "system") {
-      setTheme(
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-      );
-    } else if (mode === "light") {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  };
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
@@ -146,35 +195,6 @@ function App() {
       .then((data) => setStations(data))
       .catch((err) => console.error("Failed to load stations", err));
   }, []);
-
-  // Could move this to station container
-  useEffect(() => {
-    if (search.trim() !== "") {
-      const filtered = stations.filter((station) =>
-        normalize(station.name).startsWith(normalize(search))
-      );
-      setFilteredStations(
-        filtered.length > 0
-          ? [
-              ...filtered.sort((a, b) =>
-                a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-              ),
-            ]
-          : []
-      );
-    } else {
-      setFilteredStations([]);
-    }
-  }, [search, stations]);
-
-  function normalize(str) {
-    return str
-      .normalize("NFD")
-      .replace(/(?<=[aeiouAEIOU])\u0301/g, "")
-      .normalize("NFC")
-      .toLowerCase()
-      .replace(/\s+/g, "");
-  }
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -200,8 +220,31 @@ function App() {
       toggleMenu();
     }
   };
+
+  const toggleStats = () => {
+    setShowStats((prev) => !prev);
+    if (showMenu) {
+      toggleMenu();
+    }
+  };
+
+  const toggleFullMap = () => {
+    setShowFullMap((prev) => !prev);
+  };
   return (
     <>
+      <div className={`stats-container ${showStats ? "open" : "closed"}`}>
+        <Stats
+          toggleStats={toggleStats}
+          theme={theme}
+          user={user}
+          today={today}
+          targetStation={targetStation}
+          lastPlayed={lastPlayed}
+          compareLastPlayed={compareLastPlayed}
+          stopsFromTarget={stopsFromTarget}
+        ></Stats>
+      </div>
       <div
         className={`how-to-play-container ${showHowToPlay ? "open" : "closed"}`}
       >
@@ -209,6 +252,9 @@ function App() {
           toggleHowToPlay={toggleHowToPlay}
           stations={stations}
           theme={theme}
+          graph={graph}
+          nameToId={nameToId}
+          stopsFromTarget={stopsFromTarget}
         ></HowToPlay>
       </div>
       <div className={`about-container ${showAbout ? "open" : "closed"}`}>
@@ -221,8 +267,8 @@ function App() {
       >
         <Theme
           toggleThemePanel={toggleThemePanel}
-          toggleTheme={toggleTheme}
           theme={theme}
+          setTheme={setTheme}
         ></Theme>
       </div>
       <div className={`menu-container ${showMenu ? "open" : "closed"}`}>
@@ -231,13 +277,32 @@ function App() {
           toggleHowToPlay={toggleHowToPlay}
           toggleAbout={toggleAbout}
           toggleThemePanel={toggleThemePanel}
+          toggleStats={toggleStats}
           theme={theme}
         ></Menu>
       </div>
-      {(showMenu || showHowToPlay || showAbout || showThemePanel || correctStationPopUp) && (
-        <div className="backdrop"></div>
+      {showFullMap && (
+        <div className="full-map-container">
+          <FullMap
+            toggleFullMap={toggleFullMap}
+            guesses={guesses}
+            targetStation={targetStation}
+            checkWin={checkWin}
+          ></FullMap>
+        </div>
       )}
+      {(showMenu ||
+        showHowToPlay ||
+        showAbout ||
+        showThemePanel ||
+        correctStationPopUp ||
+        showStats) && <div className="backdrop"></div>}
       <div className="main-area-container">
+        {compareLastPlayed() && (
+          <button className="full-map-button" onClick={toggleFullMap}>
+            <img className="full-map-button-img" src={fullMapButton}></img>
+          </button>
+        )}
         <div className="game-area">
           {!showMenu && (
             <button className="hamburger-button" onClick={toggleMenu}>
@@ -262,13 +327,10 @@ function App() {
             style={{
               width: "200px",
               height: "200px",
-              overflow: "hidden",
               position: "relative",
             }}
           >
-            {!guesses.includes(targetStation) && (
-              <div className="map-centre-animation"></div>
-            )}
+            <div className="map-centre-animation"></div>
             <img
               className="map"
               src={map}
@@ -286,7 +348,7 @@ function App() {
               }}
             />
             {Object.entries(lineMap).map(([name, src]) => {
-              if (!guessedLines.has(name)) {
+              if (!guessedLines.has(name) && !compareLastPlayed()) {
                 return (
                   <img
                     key={name}
@@ -308,7 +370,10 @@ function App() {
               }
             })}
             {Object.entries(stationMap).map(([name, src]) => {
-              if (guessedStationNames.includes(normalize(name))) {
+              if (
+                guessedStationNames.includes(normalize(name)) ||
+                compareLastPlayed()
+              ) {
                 return (
                   <img
                     key={name}
@@ -329,6 +394,24 @@ function App() {
                 );
               }
             })}
+            {compareLastPlayed() && (
+              <div className="national-rail-stations">
+                <img
+                  src={nationalRailStations}
+                  style={{
+                    position: "absolute",
+                    width: "1705px",
+                    height: "1705px",
+                    left: targetStation
+                      ? `-${targetStation.coordinates[0] - 100}px`
+                      : "0px",
+                    top: targetStation
+                      ? `-${targetStation.coordinates[1] - 100}px`
+                      : "0px",
+                  }}
+                ></img>
+              </div>
+            )}
           </div>
         </div>
         {correctStationPopUp && (
@@ -341,6 +424,9 @@ function App() {
             guesses={guesses}
             targetStation={targetStation}
             guessedLines={guessedLines}
+            nameToId={nameToId}
+            graph={graph}
+            stopsFromTarget={stopsFromTarget}
           ></GuessContainer>
         </div>
         {search.length > 0 && (
@@ -352,28 +438,41 @@ function App() {
               filteredStations={filteredStations}
               guessedLines={guessedLines}
               targetStation={targetStation}
-              guesses={guesses}
+              guessedStationNames={guessedStationNames}
               normalize={normalize}
             ></StationContainer>
           </div>
         )}
       </div>
-      {!lastPlayed === today || !lastPlayed && (
-          <div className="keyboard-container">
-            <Keyboard
-              search={search}
-              setSearch={setSearch}
-              filteredStations={filteredStations}
-              setFilteredStations={setFilteredStations}
-              setGuesses={setGuesses}
-              setGuessedLines={setGuessedLines}
-              setGuessedStationNames={setGuessedStationNames}
-              normalize={normalize}
-              showMenu={showMenu}
-              today={today}
-            ></Keyboard>
-          </div>
-        )}
+      {(!compareLastPlayed() || !lastPlayed) && (
+        <div className="keyboard-container">
+          <Keyboard
+            search={search}
+            setSearch={setSearch}
+            filteredStations={filteredStations}
+            setFilteredStations={setFilteredStations}
+            setGuesses={setGuesses}
+            setGuessedLines={setGuessedLines}
+            setGuessedStationNames={setGuessedStationNames}
+            normalize={normalize}
+            showMenu={showMenu}
+            today={today}
+            user={user}
+          ></Keyboard>
+        </div>
+      )}
+      {compareLastPlayed() && (
+        <div className="countdown-container">
+          <Countdown
+            today={today}
+            bfsDistance={bfsDistance}
+            nameToId={nameToId}
+            graph={graph}
+            guesses={guesses}
+            compareLastPlayed={compareLastPlayed}
+          ></Countdown>
+        </div>
+      )}
     </>
   );
 }

@@ -1,8 +1,7 @@
-const express = require("express");
+import express from "express"
 const router = express.Router();
-
-const StationsController = require("../controllers/stations");
+import StationsController from "../controllers/stations.js"
 
 router.get("/", StationsController.getTargetStation);
 
-module.exports = router;
+export default router;

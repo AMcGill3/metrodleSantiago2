@@ -1,6 +1,7 @@
 import circleMap from "../../utils/loadLineCircleSVGs";
 import wrongCircleMap from "../../utils/loadWrongLineCirclesSVGs.js";
 import "./StationContainer.css";
+import { useEffect } from "react";
 
 export const StationContainer = ({
   search,
@@ -8,9 +9,28 @@ export const StationContainer = ({
   setFilteredStations,
   guessedLines,
   targetStation,
-  guesses,
+  guessedStationNames,
   normalize,
+  stations,
 }) => {
+  useEffect(() => {
+    if (search.trim() !== "") {
+      const filtered = stations.filter((station) =>
+        normalize(station.name).startsWith(normalize(search))
+      );
+      setFilteredStations(
+        filtered.length > 0
+          ? [
+              ...filtered.sort((a, b) =>
+                a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+              ),
+            ]
+          : []
+      );
+    } else {
+      setFilteredStations([]);
+    }
+  }, [search, stations]);
 
   return (
     <div className="station-container">
@@ -22,13 +42,13 @@ export const StationContainer = ({
         filteredStations.map((station, index) => {
           const normalizedName = normalize(station.name);
           const normalizedSearch = normalize(search);
-          const isGuessed = guesses.includes(station);
+          const isGuessed = guessedStationNames.includes(normalizedName);
           const matchLength = normalizedName.startsWith(normalizedSearch)
             ? normalizedSearch.length
             : 0;
 
-          const start = station.name.slice(0, matchLength);
-          const rest = station.name.slice(matchLength);
+          const start = normalizedName.slice(0, matchLength);
+          const rest = normalizedName.slice(matchLength);
 
           return (
             <div
@@ -37,8 +57,10 @@ export const StationContainer = ({
               onClick={() => setFilteredStations([station])}
             >
               <div className="station-name">
-                <span className="highlight">{start.toUpperCase()}</span>
-                {rest.toUpperCase()}
+                <span className="highlight">
+                  {start.toUpperCase().replace(/\s+/g, "")}
+                </span>
+                {rest.toUpperCase().replace(/\s+/g, "")}
               </div>
               <div className="station-circles">
                 {station.lines.map((line) => {

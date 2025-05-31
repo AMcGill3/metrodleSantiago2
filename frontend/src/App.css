@@ -27,8 +27,8 @@ body {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: rgba(0, 192, 58, 0.7); /* Example: red circle with 70% opacity */
-  animation: pulse 3s infinite;
+  background-color: rgba(0, 192, 58, 0.7);
+  animation: pulse 2.5s infinite;
   z-index: 10;
   transform: translate(-50%, -50%);
 }
@@ -96,4 +96,19 @@ body {
 .backdrop.active {
   display: block;
   pointer-events: auto;
+}
+
+.full-map-button {
+  height: 50px;
+  width: 50px;
+  background-color: transparent;
+  border: 0;
+  position: fixed;
+  right: 60px;
+}
+
+.full-map-button-img {
+  height: 40px;
+  width: 40px;
+  transform: translateX(-3px);
 }

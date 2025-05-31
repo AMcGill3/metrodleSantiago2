@@ -1,5 +1,6 @@
 {
   "Note": "This is a dummy package.json file to prevent accidental installation or running of packages in the wrong location",
+  "type": "module",
   "scripts": {
     "dev": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
     "start": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",

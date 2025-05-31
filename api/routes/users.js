@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express"
 
-const UsersController = require("../controllers/users");
+import UsersController from "../controllers/users.js";
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.get("/", UsersController.getUser);
 router.patch("/update", UsersController.updateUser);
 router.patch("/guess", UsersController.makeGuess);
 
-module.exports = router;
+export default router;

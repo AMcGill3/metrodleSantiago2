@@ -1,6 +1,7 @@
 {
   "name": "acebook-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend template for the Makers Acebook project.",
   "main": "index.js",
   "scripts": {

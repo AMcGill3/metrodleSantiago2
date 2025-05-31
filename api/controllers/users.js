@@ -1,5 +1,6 @@
-const User = require("../models/user");
-const mongoose = require("mongoose");
+import User from "../models/user.js";
+import mongoose from "mongoose"
+import { normalize } from "../../normalize.js";
 
 async function createUser(req, res) {
   try {
@@ -20,8 +21,9 @@ async function getUser(req, res) {
       _id: new mongoose.Types.ObjectId(req.query.username),
     });
     res.status(200).json({
+      username: foundUser._id,
       game: foundUser.game,
-      winningStreak: foundUser.winningStreak,
+      streak: foundUser.streak,
       gamesPlayed: foundUser.gamesPlayed,
       winsInXGuesses: foundUser.winsInXGuesses,
       lastPlayed: foundUser.lastPlayed,
@@ -44,30 +46,28 @@ async function updateUser(req, res) {
     user.gamesPlayed += 1;
 
     if (req.body.win === true && req.body.guessNumber !== null) {
-      user.winsInXGuesses[req.body.guessNumber - 1] += 1;
+      user.winsInXGuesses[req.body.guessNumber] += 1;
       user.markModified("winsInXGuesses");
 
+    }
+    if (user.lastPlayed) {
+      const lastPlayed = new Date(user.lastPlayed);
+      lastPlayed.setHours(0, 0, 0, 0);
 
-      if (user.lastPlayed) {
-        const lastPlayed = new Date(user.lastPlayed);
-        lastPlayed.setHours(0, 0, 0, 0);
-
-        const difference = (dateToday - lastPlayed) / 86400000;
-        if (difference === 1) {
-          if (user.maxStreak === user.winningStreak) {
-            user.maxStreak += 1;
-          }
-          user.winningStreak += 1;
-        } else {
-          user.winningStreak = 1;
+      const difference = (dateToday - lastPlayed) / 86400000;
+      if (difference === 1) {
+        if (user.maxStreak === user.streak) {
+          user.maxStreak += 1;
         }
+        user.streak += 1;
       } else {
-        user.winningStreak = 1;
-        user.maxStreak = 1;
+        user.streak = 1;
       }
     } else {
-      user.winningStreak = 0;
+      user.streak = 1;
+      user.maxStreak = 1;
     }
+
     user.lastPlayed = dateToday;
 
     await user.save();
@@ -92,7 +92,7 @@ async function makeGuess(req, res) {
 
     user.game.guesses.push(guess);
 
-    user.game.guessedStationNames.push(guess.name);
+    user.game.guessedStationNames.push(normalize(guess.name));
 
     user.game.guessedLines = [
       ...new Set([...user.game.guessedLines, ...guess.lines]),
@@ -116,4 +116,4 @@ const UsersController = {
   makeGuess: makeGuess,
 };
 
-module.exports = UsersController;
+export default UsersController;

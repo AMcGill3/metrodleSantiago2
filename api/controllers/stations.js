@@ -1,4 +1,4 @@
-const TargetStation = require("../models/targetStation");
+import TargetStation from "../models/targetStation.js";
 
 async function getTargetStation(req, res) {
   try {
@@ -13,4 +13,4 @@ const StationsController = {
   getTargetStation: getTargetStation
 };
 
-module.exports = StationsController;
+export default StationsController;

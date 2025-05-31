@@ -1,11 +1,11 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-const usersRouter = require("./routes/users");
-const stationsRouter = require("./routes/stations");
+import usersRouter from "./routes/users.js";
+import stationsRouter from "./routes/stations.js";
 
-const app = express();
+const app = express(); // ✅ Declare first, then export
 
 // Allow requests from any client
 // docs: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
@@ -37,5 +37,4 @@ app.use((err, _req, res, _next) => {
   }
 });
 
-module.exports = app;
-
+export default app;

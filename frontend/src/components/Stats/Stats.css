@@ -1,0 +1,108 @@
+.stats-container {
+  transition: top 0.2s ease, opacity 0.2s ease;
+  position: fixed;
+  background-color: var(--menu-bg);
+  color: var(--text-colour-bg);
+  z-index: 9999;
+  border-radius: 10px;
+  border: 1px solid rgb(0, 0, 0);
+  width: 600px;
+  overflow-y: auto;
+  padding: 20px 20px 32px 20px;
+  margin-top: 10px;
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  transform: translateX(-50%);
+  height: max-content;
+}
+
+.stats-container.open {
+  top: 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+.stats-container.closed {
+  top: 100px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.exit-stats-button {
+  background-color: transparent;
+  border: 0;
+  transform: translateX(280px);
+}
+
+.figures {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  padding: 0 70px 0 70px;
+  font-weight: bold;
+}
+
+.figure-item {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.01;
+}
+
+.share {
+  background-color: rgb(28, 63, 148);
+  height: 40px;
+  width: 147px;
+  color: white;
+  border-radius: 6px;
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 0;
+  justify-self: center;
+}
+
+.share-button {
+  position: relative;
+}
+
+.share-symbol {
+  height: 20px;
+}
+
+.chart {
+  margin-right: 90px;
+  margin-left: 35px;
+  position: relative;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.guess-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 35px;
+}
+
+.number {
+  width: 20px;
+  text-align: right;
+}
+
+.bar {
+  background-color: #f3852e;
+  border-radius: 6px;
+  width: 350px;
+  height: 30px;
+}
+
+.bar.zero {
+  width: 11px;
+}
+
+.bar.today {
+  background-color: #47dd29;
+}

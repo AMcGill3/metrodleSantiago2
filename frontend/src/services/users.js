@@ -63,7 +63,6 @@ export async function createUser() {
     }
 
     const data = await response.json();
-    console.log("Generated username:", data);
     return data.username;
   } catch (err) {
     console.error("Create Error:", err.message);

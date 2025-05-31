@@ -1,9 +1,9 @@
-const cron = require("node-cron");
-const Station = require("../models/station");
-const targetStation = require("../models/targetStation");
+import cron from "node-cron";
+import Station from "../models/station.js";
+import targetStation from "../models/targetStation.js";
 
-function startTargetStationJob() {
-  CRON_TZ = "America/Santiago";
+export default function startTargetStationJob() {
+  const CRON_TZ = "America/Santiago";
   cron.schedule("0 0 * * *", async () => {
     try {
       const [randomStation] = await Station.aggregate([
@@ -20,9 +20,11 @@ function startTargetStationJob() {
     } catch (err) {
       console.error("[CRON] Failed to set target station:", err);
     }
-  });
+  },
+{
+  timezone: CRON_TZ
+});
 
   console.log("[CRON] Target station job scheduled.");
 }
 
-module.exports = startTargetStationJob;

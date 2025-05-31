@@ -2,9 +2,6 @@ import "./Guess.css";
 import circleMap from "../../utils/loadLineCircleSVGs";
 import wrongCircleMap from "../../utils/loadWrongLineCirclesSVGs.js";
 import arrowMap from "../../utils/loadArrowSVGs";
-import { loadGraphFromTGF } from "../../utils/loadGraphFromTGF.js";
-import { buildGraph, bfsDistance } from "../../utils/graphUtils.js";
-import { useEffect, useState } from "react";
 import upArrowDark from "../../assets/DirectionArrows/upDark.svg";
 import northEastArrowDark from "../../assets/DirectionArrows/northEastDark.svg";
 import eastArrowDark from "../../assets/DirectionArrows/eastDark.svg";
@@ -14,19 +11,7 @@ import southWestArrowDark from "../../assets/DirectionArrows/southWestDark.svg";
 import westArrowDark from "../../assets/DirectionArrows/westDark.svg";
 import northWestArrowDark from "../../assets/DirectionArrows/northWestDark.svg";
 
-export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
-  const [nodes, setNodes] = useState(null);
-  const [graph, setGraph] = useState(null);
-
-  useEffect(() => {
-    const fetchGraph = async () => {
-      const { nodes, edges } = await loadGraphFromTGF("adjacencyList.tgf");
-      setNodes(nodes);
-      setGraph(buildGraph(edges));
-    };
-
-    fetchGraph();
-  }, []);
+export const Guess = ({ guessed, guess, targetStation, guessedLines, stopsFromTarget }) => {
 
   const up =
     localStorage.getItem("theme") === "light" ? arrowMap["up"] : upArrowDark;
@@ -42,7 +27,10 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
     localStorage.getItem("theme") === "light"
       ? arrowMap["southEast"]
       : southEastArrowDark;
-  const down = localStorage.getItem("theme") === "light" ? arrowMap["down"] : downArrowDark;
+  const down =
+    localStorage.getItem("theme") === "light"
+      ? arrowMap["down"]
+      : downArrowDark;
   const southWest =
     localStorage.getItem("theme") === "light"
       ? arrowMap["southWest"]
@@ -110,31 +98,24 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
       : null;
   const arrow = direction ? chooseArrow(direction) : null;
 
-  const nameToId =
-    nodes &&
-    Object.entries(nodes).reduce((acc, [id, name]) => {
-      acc[name] = Number(id);
-      return acc;
-    }, {});
-
   const stopsAway =
     guess &&
     guess.name &&
     targetStation &&
-    targetStation.name &&
-    graph &&
-    nameToId
-      ? bfsDistance(graph, nameToId[guess.name], nameToId[targetStation.name])
+    targetStation.name
+      ? stopsFromTarget(guess.name)
       : null;
 
   const name = guess && guess.name ? guess.name : null;
   const lines = guess && guess.lines ? guess.lines : null;
-  
+
   if (name && targetStation && name === targetStation.name) {
     return (
       <div className="correct-guess">
         <div className="station-name-correct">{name}</div>
-        <h6 className="correct-guess-extra-message">Deje bajar antes de subir</h6>
+        <h6 className="correct-guess-extra-message">
+          Deje bajar antes de subir
+        </h6>
       </div>
     );
   }
@@ -147,7 +128,9 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines }) => {
           <div className="lines">
             {lines.map((line) => {
               const circle =
-                targetStation && guessedLines.has(line) && !targetStation.lines.includes(line)
+                targetStation &&
+                guessedLines.has(line) &&
+                !targetStation.lines.includes(line)
                   ? wrongCircleMap[`circle${line}Wrong`]
                   : circleMap[`circle${line}`];
               return (

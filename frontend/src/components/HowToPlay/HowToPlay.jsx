@@ -7,7 +7,7 @@ import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 import logo from "../../assets/pageLogo.svg";
 
-export const HowToPlay = ({ toggleHowToPlay, stations, theme }) => {
+export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, stopsFromTarget }) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
   };
@@ -146,6 +146,9 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme }) => {
         guess={santalucía}
         targetStation={universidadCatólica}
         guessedLines={new Set("1")}
+        graph={graph}
+        nameToId={nameToId}
+        stopsFromTarget={stopsFromTarget}
       ></Guess>
     </div>
   );

@@ -30,7 +30,7 @@
 
 .menu-container.open {
   left: 0;
-  opacity: 1
+  opacity: 1;
 }
 
 .menu-container.closed {

@@ -1,0 +1,88 @@
+.full-map-container {
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: scroll;
+}
+
+.map {
+  position: relative;
+  width: 1705px;
+  height: 1705px;
+  overflow: visible;
+}
+
+.map-background {
+  width: 1705px;
+  height: 1705px;
+  display: block;
+  z-index: 1;
+}
+
+.stations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1705px;
+  height: 1705px;
+  pointer-events: none;
+  z-index: 2;
+}
+.national-rail-stations-full-map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1705px;
+  height: 1705px;
+  pointer-events: none;
+}
+
+.exit-map-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: none;
+  border: none;
+  z-index: 10000;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.15);
+  }
+  50% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+.guess-animations {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: rgba(0, 192, 58, 0.7);
+  animation: pulse 2.5s infinite;
+  z-index: 10;
+}
+
+.target-animation-fail {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: rgba(192, 0, 0, 0.7);
+  animation: pulse 2.5s infinite;
+  z-index: 10;
+}
