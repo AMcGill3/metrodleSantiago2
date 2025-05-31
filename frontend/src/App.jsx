@@ -21,6 +21,7 @@ import { loadGraphFromTGF } from "../src/utils/loadGraphFromTGF.js";
 import { Countdown } from "./components/Countdown/Countdown.jsx";
 import { FullMap } from "./components/fullMap/fullMap.jsx";
 import fullMapButton from "../src/assets/fullMapButton.svg";
+import fullMapButtonDark from "../src/assets/fullMapButtonDark.svg";
 
 function App() {
   const [today] = useState(() => {
@@ -61,7 +62,7 @@ function App() {
   };
 
   const checkWin = () => {
-    return guessedStationNames.includes(normalize(targetStation.name));
+    return guessedStationNames?.includes(normalize(targetStation?.name));
   };
 
   useEffect(() => {
@@ -243,6 +244,7 @@ function App() {
           lastPlayed={lastPlayed}
           compareLastPlayed={compareLastPlayed}
           stopsFromTarget={stopsFromTarget}
+          checkWin={checkWin}
         ></Stats>
       </div>
       <div
@@ -300,7 +302,10 @@ function App() {
       <div className="main-area-container">
         {compareLastPlayed() && (
           <button className="full-map-button" onClick={toggleFullMap}>
-            <img className="full-map-button-img" src={fullMapButton}></img>
+            <img
+              className="full-map-button-img"
+              src={theme === "light" ? fullMapButton : fullMapButtonDark}
+            ></img>
           </button>
         )}
         <div className="game-area">
@@ -370,10 +375,7 @@ function App() {
               }
             })}
             {Object.entries(stationMap).map(([name, src]) => {
-              if (
-                guessedStationNames.includes(normalize(name)) ||
-                compareLastPlayed()
-              ) {
+              if (compareLastPlayed() || guessedStationNames.includes(normalize(name))) {
                 return (
                   <img
                     key={name}
@@ -414,11 +416,14 @@ function App() {
             )}
           </div>
         </div>
-        {correctStationPopUp && (
-          <div className="correct-guess-container">
-            <CorrectGuess targetStation={targetStation}></CorrectGuess>
-          </div>
-        )}
+        <div
+          className={`correct-guess-container ${
+            correctStationPopUp ? "open" : "closed"
+          }`}
+        >
+          <CorrectGuess targetStation={targetStation}></CorrectGuess>
+        </div>
+
         <div className="guess-list-container">
           <GuessContainer
             guesses={guesses}
@@ -427,6 +432,7 @@ function App() {
             nameToId={nameToId}
             graph={graph}
             stopsFromTarget={stopsFromTarget}
+            theme={theme}
           ></GuessContainer>
         </div>
         {search.length > 0 && (

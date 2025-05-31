@@ -15,3 +15,14 @@
   margin-top: 10px;
   padding: 20px 200px 32px 200px;
 }
+
+.correct-guess-container.open {
+  top: 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+.correct-guess-container.closed {
+  top: 100px;
+  opacity: 0;
+  pointer-events: none;
+}

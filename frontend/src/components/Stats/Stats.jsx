@@ -12,6 +12,7 @@ export const Stats = ({
   lastPlayed,
   compareLastPlayed,
   stopsFromTarget,
+  checkWin
 }) => {
   const exit = theme === "light" ? exitMenu : exitMenuDark;
   const totalWins = () => {
@@ -107,9 +108,7 @@ export const Stats = ({
             lastPlayed &&
             user?.game?.guesses?.length === guessCount &&
             compareLastPlayed() &&
-            user?.game?.guessedStationNames?.includes(
-              normalize(targetStation?.name)
-            );
+            checkWin();
 
           return (
             <div key={i} className="guess-row">

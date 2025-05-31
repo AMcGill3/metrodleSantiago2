@@ -2,47 +2,42 @@ import "./Guess.css";
 import circleMap from "../../utils/loadLineCircleSVGs";
 import wrongCircleMap from "../../utils/loadWrongLineCirclesSVGs.js";
 import arrowMap from "../../utils/loadArrowSVGs";
-import upArrowDark from "../../assets/DirectionArrows/upDark.svg";
-import northEastArrowDark from "../../assets/DirectionArrows/northEastDark.svg";
-import eastArrowDark from "../../assets/DirectionArrows/eastDark.svg";
-import southEastArrowDark from "../../assets/DirectionArrows/southEastDark.svg";
-import downArrowDark from "../../assets/DirectionArrows/downDark.svg";
-import southWestArrowDark from "../../assets/DirectionArrows/southWestDark.svg";
-import westArrowDark from "../../assets/DirectionArrows/westDark.svg";
-import northWestArrowDark from "../../assets/DirectionArrows/northWestDark.svg";
 
-export const Guess = ({ guessed, guess, targetStation, guessedLines, stopsFromTarget }) => {
+export const Guess = ({
+  guessed,
+  guess,
+  targetStation,
+  guessedLines,
+  stopsFromTarget,
+  theme,
+  howToPlay,
+}) => {
+  const directions = [
+    "up",
+    "northEast",
+    "east",
+    "southEast",
+    "down",
+    "southWest",
+    "west",
+    "northWest",
+  ];
 
-  const up =
-    localStorage.getItem("theme") === "light" ? arrowMap["up"] : upArrowDark;
-  const northEast =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["northEast"]
-      : northEastArrowDark;
-  const east =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["east"]
-      : eastArrowDark;
-  const southEast =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["southEast"]
-      : southEastArrowDark;
-  const down =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["down"]
-      : downArrowDark;
-  const southWest =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["southWest"]
-      : southWestArrowDark;
-  const west =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["west"]
-      : westArrowDark;
-  const northWest =
-    localStorage.getItem("theme") === "light"
-      ? arrowMap["northWest"]
-      : northWestArrowDark;
+  const arrows = Object.fromEntries(
+    directions.map((dir) => [
+      dir,
+      arrowMap[theme === "dark" ? `${dir}Dark` : dir],
+    ])
+  );
+
+  const up = arrows.up;
+  const northEast = arrows.northEast;
+  const east = arrows.east;
+  const southEast = arrows.southEast;
+  const down = arrows.down;
+  const southWest = arrows.southWest;
+  const west = arrows.west;
+  const northWest = arrows.northWest;
 
   const calculateDirection = (guessCoordinates) => {
     return [
@@ -99,10 +94,7 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines, stopsFromTa
   const arrow = direction ? chooseArrow(direction) : null;
 
   const stopsAway =
-    guess &&
-    guess.name &&
-    targetStation &&
-    targetStation.name
+    guess && guess.name && targetStation && targetStation.name
       ? stopsFromTarget(guess.name)
       : null;
 
@@ -149,7 +141,8 @@ export const Guess = ({ guessed, guess, targetStation, guessedLines, stopsFromTa
       {guessed && stopsAway !== 0 && (
         <div className="right">
           <div className="stops-away">
-            {stopsAway} {stopsAway === 1 ? "parada" : "paradas"}
+            {howToPlay ? "1" : stopsAway}{" "}
+            {howToPlay ? "parada" : stopsAway === 1 ? "parada" : "paradas"}
           </div>
           {arrow !== "correct" && (
             <div className="direction">

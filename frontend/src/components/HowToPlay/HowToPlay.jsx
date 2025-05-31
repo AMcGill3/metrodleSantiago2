@@ -149,6 +149,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
         graph={graph}
         nameToId={nameToId}
         stopsFromTarget={stopsFromTarget}
+        howToPlay={true}
       ></Guess>
     </div>
   );

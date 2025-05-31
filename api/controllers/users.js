@@ -1,5 +1,5 @@
 import User from "../models/user.js";
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 import { normalize } from "../../normalize.js";
 
 async function createUser(req, res) {
@@ -48,24 +48,20 @@ async function updateUser(req, res) {
     if (req.body.win === true && req.body.guessNumber !== null) {
       user.winsInXGuesses[req.body.guessNumber] += 1;
       user.markModified("winsInXGuesses");
+      if (user.lastPlayed) {
+        const lastPlayed = new Date(user.lastPlayed);
+        lastPlayed.setHours(0, 0, 0, 0);
 
-    }
-    if (user.lastPlayed) {
-      const lastPlayed = new Date(user.lastPlayed);
-      lastPlayed.setHours(0, 0, 0, 0);
-
-      const difference = (dateToday - lastPlayed) / 86400000;
-      if (difference === 1) {
-        if (user.maxStreak === user.streak) {
-          user.maxStreak += 1;
+        const difference = (dateToday - lastPlayed) / 86400000;
+        if (difference === 1) {
+          if (user.maxStreak === user.streak) {
+            user.maxStreak += 1;
+          }
+          user.streak += 1;
+        } else {
+          user.streak = 1;
         }
-        user.streak += 1;
-      } else {
-        user.streak = 1;
       }
-    } else {
-      user.streak = 1;
-      user.maxStreak = 1;
     }
 
     user.lastPlayed = dateToday;
