@@ -61,6 +61,9 @@ async function updateUser(req, res) {
         } else {
           user.streak = 1;
         }
+      } else {
+        user.streak = 1;
+        user.maxStreak = 1;
       }
     }
 

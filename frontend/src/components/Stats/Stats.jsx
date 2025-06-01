@@ -2,7 +2,6 @@ import "./Stats.css";
 import exitMenu from "../../assets/exitMenu.png";
 import exitMenuDark from "../../assets/exitMenuDark.svg";
 import shareSymbol from "../../assets/shareSymbol.svg";
-import { normalize } from "../../../../normalize.js";
 
 export const Stats = ({
   theme,

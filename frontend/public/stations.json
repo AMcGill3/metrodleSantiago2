@@ -144,21 +144,21 @@
     "lines": ["2"],
     "coordinates": [925, 134]
   },
-  { "name": "Dorsal", "lines": ["2"], "coordinates": [925, 179] },
+  { "name": "Dorsal", "lines": ["2"], "coordinates": [925, 180] },
   {
     "name": "Einstein",
     "lines": ["2"],
-    "coordinates": [925, 298]
+    "coordinates": [925, 225.5]
   },
   {
     "name": "Cementerios",
     "lines": ["2"],
-    "coordinates": [925, 298]
+    "coordinates": [925, 271]
   },
   {
     "name": "Cerro Blanco",
     "lines": ["2"],
-    "coordinates": [925, 298]
+    "coordinates": [925, 316]
   },
   {
     "name": "Patronato",

@@ -55,6 +55,13 @@ function App() {
   const [nodes, setNodes] = useState(null);
   const [graph, setGraph] = useState(null);
 
+  const getStationCoordinates = (name) => {
+    const station = stations?.find(
+      (s) => s.name.replace(/\s+/g, "").toLowerCase() === name
+    );
+    return station ? station.coordinates : null;
+  };
+
   const compareLastPlayed = () => {
     if (lastPlayed) {
       return lastPlayed?.getTime() === today?.getTime();
@@ -63,6 +70,17 @@ function App() {
 
   const checkWin = () => {
     return guessedStationNames?.includes(normalize(targetStation?.name));
+  };
+
+  let targetX = targetStation?.coordinates[0];
+
+  let targetY = targetStation?.coordinates[1];
+
+  function tooClose(coordinate) {
+    return coordinate < 150;
+  }
+  const tooFar = (coordinate) => {
+    return coordinate > 1550;
   };
 
   useEffect(() => {
@@ -232,6 +250,7 @@ function App() {
   const toggleFullMap = () => {
     setShowFullMap((prev) => !prev);
   };
+
   return (
     <>
       <div className={`stats-container ${showStats ? "open" : "closed"}`}>
@@ -335,7 +354,28 @@ function App() {
               position: "relative",
             }}
           >
-            <div className="map-centre-animation"></div>
+            {targetStation && (
+              <div
+                className="map-centre-animation"
+                style={{
+                  left: `${
+                    tooClose(targetX)
+                      ? targetX
+                      : tooFar(targetX)
+                      ? targetX - 1505 - 50
+                      : 50
+                  }px`,
+                  top: `${
+                    tooClose(targetY)
+                      ? targetY
+                      : tooFar(targetY)
+                      ? targetY - 1505 - 50
+                      : 50
+                  }px`,
+                }}
+              ></div>
+            )}
+
             <img
               className="map"
               src={map}
@@ -345,10 +385,18 @@ function App() {
                 width: "1705px",
                 height: "1705px",
                 left: targetStation
-                  ? `-${targetStation.coordinates[0] - 100}px`
+                  ? tooClose(targetX) || tooFar(targetX)
+                    ? tooClose(targetX)
+                      ? "0px"
+                      : "1505px"
+                    : `-${targetX - 100}px`
                   : "0px",
                 top: targetStation
-                  ? `-${targetStation.coordinates[1] - 100}px`
+                  ? tooClose(targetY) || tooFar(targetY)
+                    ? tooClose(targetY)
+                      ? "0px"
+                      : "-1505px"
+                    : `-${targetY - 100}px`
                   : "0px",
               }}
             />
@@ -364,10 +412,18 @@ function App() {
                       width: "1705px",
                       height: "1705px",
                       left: targetStation
-                        ? `-${targetStation.coordinates[0] - 100}px`
+                        ? tooClose(targetX) || tooFar(targetX)
+                          ? tooClose(targetX)
+                            ? "0px"
+                            : "1505px"
+                          : `-${targetX - 100}px`
                         : "0px",
                       top: targetStation
-                        ? `-${targetStation.coordinates[1] - 100}px`
+                        ? tooClose(targetY) || tooFar(targetY)
+                          ? tooClose(targetY)
+                            ? "0px"
+                            : "-1505px"
+                          : `-${targetY - 100}px`
                         : "0px",
                     }}
                   ></img>
@@ -375,7 +431,19 @@ function App() {
               }
             })}
             {Object.entries(stationMap).map(([name, src]) => {
-              if (compareLastPlayed() || guessedStationNames.includes(normalize(name))) {
+              const guessCoordinates = getStationCoordinates(name);
+              const close =
+                guessCoordinates &&
+                targetStation &&
+                Math.abs(targetStation.coordinates[0] - guessCoordinates[0]) <=
+                  150 &&
+                Math.abs(targetStation.coordinates[1] - guessCoordinates[1]) <=
+                  150;
+              if (
+                close &&
+                (compareLastPlayed() ||
+                  guessedStationNames.includes(normalize(name)))
+              ) {
                 return (
                   <img
                     key={name}
@@ -386,10 +454,18 @@ function App() {
                       width: "1705px",
                       height: "1705px",
                       left: targetStation
-                        ? `-${targetStation.coordinates[0] - 100}px`
+                        ? tooClose(targetX) || tooFar(targetX)
+                          ? tooClose(targetX)
+                            ? "0px"
+                            : "1505px"
+                          : `-${targetX - 100}px`
                         : "0px",
                       top: targetStation
-                        ? `-${targetStation.coordinates[1] - 100}px`
+                        ? tooClose(targetY) || tooFar(targetY)
+                          ? tooClose(targetY)
+                            ? "0px"
+                            : "-1505px"
+                          : `-${targetY - 100}px`
                         : "0px",
                     }}
                   ></img>
@@ -405,10 +481,18 @@ function App() {
                     width: "1705px",
                     height: "1705px",
                     left: targetStation
-                      ? `-${targetStation.coordinates[0] - 100}px`
+                      ? tooClose(targetX) || tooFar(targetX)
+                        ? tooClose(targetX)
+                          ? "0px"
+                          : "1505px"
+                        : `-${targetX - 100}px`
                       : "0px",
                     top: targetStation
-                      ? `-${targetStation.coordinates[1] - 100}px`
+                      ? tooClose(targetY) || tooFar(targetY)
+                        ? tooClose(targetY)
+                          ? "0px"
+                          : "-1505px"
+                        : `-${targetY - 100}px`
                       : "0px",
                   }}
                 ></img>
