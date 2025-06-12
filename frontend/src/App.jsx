@@ -22,6 +22,9 @@ import { Countdown } from "./components/Countdown/Countdown.jsx";
 import { FullMap } from "./components/fullMap/fullMap.jsx";
 import fullMapButton from "../src/assets/fullMapButton.svg";
 import fullMapButtonDark from "../src/assets/fullMapButtonDark.svg";
+import loadingSymbolMorning from "../src/assets/loadingSymbols/loadingSymbolMorning.svg";
+import loadingSymbolAfternoon from "../src/assets/loadingSymbols/loadingSymbolAfternoon.svg";
+import loadingSymbolEvening from "../src/assets/loadingSymbols/loadingSymbolEvening.svg";
 
 function App() {
   const [today] = useState(() => {
@@ -29,6 +32,7 @@ function App() {
     d.setHours(0, 0, 0, 0);
     return d;
   });
+  const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [showFullMap, setShowFullMap] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -41,6 +45,7 @@ function App() {
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
   const [targetStation, setTargetStation] = useState(null);
+  const [puzzleNumber, setPuzzleNumber] = useState(null)
   const [correctStationPopUp, setCorrectStationPopUp] = useState(false);
   const [lastPlayed, setLastPlayed] = useState(null);
   const [showStats, setShowStats] = useState(false);
@@ -62,10 +67,50 @@ function App() {
     return station ? station.coordinates : null;
   };
 
-  const compareLastPlayed = () => {
-    if (lastPlayed) {
-      return lastPlayed?.getTime() === today?.getTime();
+  useEffect(() => {
+    const fetchGraph = async () => {
+      const { nodes, edges } = await loadGraphFromTGF("adjacencyList.tgf");
+      setNodes(nodes);
+      setGraph(buildGraph(edges));
+    };
+
+    fetchGraph();
+  }, []);
+
+  useEffect(() => {
+    async function fetchTarget() {
+      try {
+        const res = await getTargetStation();
+        if (res?.station) {
+          setTargetStation(res.station);
+          setPuzzleNumber(res.number)
+        }
+      } catch (err) {
+        console.error("Failed to load target station:", err);
+      }
     }
+
+    fetchTarget();
+  }, []);
+
+  useEffect(() => {
+    fetch("stations.json")
+      .then((response) => response.json())
+      .then((data) => setStations(data))
+      .catch((err) => console.error("Failed to load stations", err));
+  }, []);
+
+  useEffect(() => {
+    if (graph && targetStation && stations && user) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 600);
+    }
+  }, [graph, targetStation, stations, user]);
+
+  const compareLastPlayed = () => {
+    if (!lastPlayed) return false;
+    return lastPlayed.getTime() === today.getTime();
   };
 
   const checkWin = () => {
@@ -82,16 +127,6 @@ function App() {
   const tooFar = (coordinate) => {
     return coordinate > 1550;
   };
-
-  useEffect(() => {
-    const fetchGraph = async () => {
-      const { nodes, edges } = await loadGraphFromTGF("adjacencyList.tgf");
-      setNodes(nodes);
-      setGraph(buildGraph(edges));
-    };
-
-    fetchGraph();
-  }, []);
 
   const nameToId =
     nodes &&
@@ -125,9 +160,9 @@ function App() {
           setGuesses(userData.game.guesses || []);
           setGuessedLines(new Set(userData.game.guessedLines || []));
           setGuessedStationNames(userData.game.guessedStationNames || []);
-          setLastPlayed(
-            new Date(new Date(userData.lastPlayed).setHours(0, 0, 0, 0))
-          );
+          const date = new Date(userData.lastPlayed);
+          date.setHours(0, 0, 0, 0);
+          setLastPlayed(date);
         }
       } catch (err) {
         console.error("Failed to load user game data:", err);
@@ -138,25 +173,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (compareLastPlayed()) {
-      setShowStats(true);
+    if (!loading && compareLastPlayed()) {
+      setTimeout(() => {
+        setShowStats(true);
+      }, 200);
     }
-  }, []);
-
-  useEffect(() => {
-    async function fetchTarget() {
-      try {
-        const res = await getTargetStation();
-        if (res?.station) {
-          setTargetStation(res.station);
-        }
-      } catch (err) {
-        console.error("Failed to load target station:", err);
-      }
-    }
-
-    fetchTarget();
-  }, []);
+  }, [loading, lastPlayed]);
 
   const stopsFromTarget = (stationName) => {
     if (
@@ -177,7 +199,6 @@ function App() {
   // end game logic
   useEffect(() => {
     if (!targetStation) return;
-
     if (
       !compareLastPlayed() &&
       (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
@@ -207,13 +228,6 @@ function App() {
     localStorage.setItem("theme", theme);
     document.body.setAttribute("data-theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    fetch("stations.json")
-      .then((response) => response.json())
-      .then((data) => setStations(data))
-      .catch((err) => console.error("Failed to load stations", err));
-  }, []);
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -250,6 +264,16 @@ function App() {
   const toggleFullMap = () => {
     setShowFullMap((prev) => !prev);
   };
+  if (loading) {
+    const t = new Date().getHours();
+    return (
+      <div className="loading-screen">
+        {t < 12 && <img src={loadingSymbolMorning}></img>}
+        {t < 18 && t >= 12 && <img src={loadingSymbolAfternoon}></img>}
+        {t >= 18 && t < 24 && <img src={loadingSymbolEvening}></img>}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -264,6 +288,7 @@ function App() {
           compareLastPlayed={compareLastPlayed}
           stopsFromTarget={stopsFromTarget}
           checkWin={checkWin}
+          puzzleNumber={puzzleNumber}
         ></Stats>
       </div>
       <div
@@ -346,28 +371,21 @@ function App() {
               </svg>
             </button>
           )}
-          <div
-            className="map-container"
-            style={{
-              width: "200px",
-              height: "200px",
-              position: "relative",
-            }}
-          >
+          <div className="map-container">
             {targetStation && (
               <div
                 className="map-centre-animation"
                 style={{
                   left: `${
                     tooClose(targetX)
-                      ? targetX
+                      ? targetX - 50
                       : tooFar(targetX)
                       ? targetX - 1505 - 50
                       : 50
                   }px`,
                   top: `${
                     tooClose(targetY)
-                      ? targetY
+                      ? targetY - 50
                       : tooFar(targetY)
                       ? targetY - 1505 - 50
                       : 50
@@ -404,9 +422,10 @@ function App() {
               if (!guessedLines.has(name) && !compareLastPlayed()) {
                 return (
                   <img
+                    className="line-blockers"
                     key={name}
                     src={src}
-                    alt={name}
+                    alt={`bloqueador de línea`}
                     style={{
                       position: "absolute",
                       width: "1705px",
@@ -446,6 +465,7 @@ function App() {
               ) {
                 return (
                   <img
+                    className="station-labels"
                     key={name}
                     src={src}
                     alt={name}
@@ -508,7 +528,7 @@ function App() {
           <CorrectGuess targetStation={targetStation}></CorrectGuess>
         </div>
 
-        <div className="guess-list-container">
+        <>
           <GuessContainer
             guesses={guesses}
             targetStation={targetStation}
@@ -518,7 +538,7 @@ function App() {
             stopsFromTarget={stopsFromTarget}
             theme={theme}
           ></GuessContainer>
-        </div>
+        </>
         {search.length > 0 && (
           <div className="stations-container">
             <StationContainer

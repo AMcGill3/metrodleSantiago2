@@ -16,3 +16,10 @@
   padding-top: 10px;
   color: var(--text-colour-bg);
 }
+
+@media (max-width: 600px) {
+  .countdown-container {
+    max-width: 95vw;
+    margin: 0 auto 2px auto;
+  }
+}

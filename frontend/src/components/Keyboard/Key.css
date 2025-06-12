@@ -2,7 +2,6 @@
   background-color: rgb(28, 63, 148);
   border-radius: 8px;
   border: 0;
-  padding: 0;
   display: flex;
   flex: 1 1 0px;
   justify-content: center;
@@ -20,5 +19,63 @@
 
 .key.not-next {
   background-color: dimgrey;
-  transition: ease-in 0.15s
+  transition: ease-in 0.15s;
+}
+
+.non-letter-button {
+  background-color: #444444;
+  color: #aaaaaa;
+  height: 54px;
+  border-radius: 8px;
+  border-color: #444444;
+  margin-top: 1px;
+  border: 0;
+  font-weight: bold;
+  position: relative;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.delete-symbol {
+  margin: 0;
+}
+
+.non-letter-button.clickable {
+  background-color: rgb(28, 63, 148);
+  color: white;
+  transition: ease-in 0.1s;
+}
+
+@media (min-height: 700px) {
+  .key {
+    height: 70px;
+  }
+  .non-letter-button {
+    height: 70px;
+  }
+}
+
+@media (max-width: 600px) {
+  .non-letter-button {
+    width: 50px;
+    font-size: 7px;
+  }
+  .non-letter-button img {
+    height: 25px;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .key {
+    height: 40px;
+  }
+    .non-letter-button {
+    height: 40px;
+    font-size: 6px;
+    width: 50px;
+  }
+  .non-letter-button img {
+    height: 20px;
+  }
 }

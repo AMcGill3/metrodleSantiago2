@@ -1,33 +1,53 @@
 .how-to-play-container {
-  transition: top 0.2s ease, opacity 0.2s ease;
   position: fixed;
+  left: 50%;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
   background-color: var(--menu-bg);
   color: var(--text-colour-bg);
   z-index: 9999;
   border-radius: 10px;
   border: 1px solid rgb(0, 0, 0);
-  width: 600px;
+  width: 50vw;
   overflow-y: auto;
   padding: 20px 20px 32px 20px;
-  margin-top: 10px;
-  left: 50%;
-  top: 4px;
-  bottom: 4px;
-  transform: translateX(-50%);
+  max-height: 85vh;
 }
 
 .how-to-play-container.open {
-  top: 0;
+  transform: translate(-50%, 0);
   opacity: 1;
   pointer-events: auto;
 }
+
 .how-to-play-container.closed {
-  top: 100px;
+  transform: translate(-50%, 30px);
   opacity: 0;
   pointer-events: none;
 }
 
+
 .exit-how-to-play-button {
   background-color: transparent;
   border: 0;
+}
+
+@media (max-height: 600px) {
+  .header {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .how-to-play-container {
+    width: 75vw;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .how-to-play-container {
+    max-height: 70vh;
+    width: 75vw;
+  }
 }

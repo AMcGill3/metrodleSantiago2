@@ -6,7 +6,19 @@
   height: 46px;
   border-radius: 6px;
   padding: 0 4px;
-  margin-bottom: 2px;
+  max-width: 95vw;
+  margin: 0 auto 2px auto;
+  box-sizing: border-box;
+}
+
+.guess-card.guessed {
+  background-color: var(--guess-card-guessed-bg);
+  color: var(--text-colour-guess-card-bg);
+}
+
+.guess-card.not-guessed {
+  background-color: var(--guess-card-not-guessed-bg);
+  color: var(--text-colour-guess-card-bg);
 }
 
 .correct-guess {
@@ -18,9 +30,9 @@
   position: relative;
   height: 46px;
   border-radius: 6px;
-  padding: 0 4px;
-  margin-bottom: 2px;
+  margin: 0 auto 2px auto;
   justify-content: center;
+  max-width: 95vw;
 }
 
 .correct-guess-extra-message {
@@ -34,36 +46,28 @@
   transform: translateY(-5px);
 }
 
-.guess-card.guessed {
-  background-color: var(--guess-card-guessed-bg);
-  color: var(--text-colour-guess-card-bg);
-}
-
-.guess-card.not-guessed {
-  background-color: var(--guess-card-not-guessed-bg);
-  color: var(--text-colour-guess-card-bg);
-}
-
 .left {
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin-bottom: 10px;
+  margin-top: 3px;
 }
 
 .station-name {
-  font-size: 1rem;
   font-weight: bold;
+  font-size: 13px;
 }
 
 .lines {
   display: flex;
+  align-items: center;
   gap: 5px;
   height: 15px;
 }
 
 .circle {
-  height: 100%;
+  height: 120%;
 }
 
 .right {
@@ -79,4 +83,79 @@
 
 .direction img {
   height: 13px;
+}
+
+@media (max-width: 600px) {
+  .guess-card {
+    height: 30px;
+  }
+
+  .guess-card.guessed {
+    height: 40px;
+  }
+
+  .station-name {
+    font-size: 14px;
+  }
+
+  .stops-away {
+    font-size: 12px;
+  }
+
+  .correct-guess {
+    height: 40px;
+  }
+
+  .direction img {
+    height: 11px;
+  }
+
+  .correct-guess {
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 650px) and (orientation: landscape) {
+  .guess-card {
+    height: 30px;
+  }
+  .left {
+    flex-direction: row;
+    margin: 0;
+    align-items: center;
+  }
+
+  .lines {
+    height: 17px;
+  }
+}
+
+@media (max-height: 400px) and (orientation: landscape) {
+  .guess-card  {
+    height: 20px;
+  }
+
+  .correct-guess {
+    height: 25px;
+  }
+
+  .station-name-correct {
+    font-size: 10px;
+    transform: translateY(-10px);
+  }
+
+  .correct-guess-extra-message {
+    transform: translateY(-21px);
+    font-size: 7px;
+  }
+
+  .lines {
+    height: 13px; 
+  }
+}
+
+@media (orientation: landscape) {
+  .left {
+    gap: 7px;
+  }
 }

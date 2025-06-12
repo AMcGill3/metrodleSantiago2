@@ -1,5 +1,5 @@
 .stats-container {
-  transition: top 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   position: fixed;
   background-color: var(--menu-bg);
   color: var(--text-colour-bg);
@@ -7,23 +7,30 @@
   border-radius: 10px;
   border: 1px solid rgb(0, 0, 0);
   width: 600px;
-  overflow-y: auto;
   padding: 20px 20px 32px 20px;
-  margin-top: 10px;
+  top: 50%;
   left: 50%;
-  top: 4px;
-  bottom: 4px;
-  transform: translateX(-50%);
-  height: max-content;
+  transform: translate(-50%, -50%);
+  max-height: max-content;
+}
+
+.top {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.main-area {
+  padding-top: 20px;
 }
 
 .stats-container.open {
-  top: 0;
+  transform: translate(-50%, -50%);
   opacity: 1;
   pointer-events: auto;
 }
 .stats-container.closed {
-  top: 100px;
+  transform: translate(-50%, 30px);
   opacity: 0;
   pointer-events: none;
 }
@@ -31,7 +38,9 @@
 .exit-stats-button {
   background-color: transparent;
   border: 0;
-  transform: translateX(280px);
+  position: fixed;
+  top: 10px;
+  right: 0;
 }
 
 .figures {
@@ -85,11 +94,13 @@
   align-items: center;
   gap: 10px;
   height: 35px;
+  width: 100%;
 }
 
 .number {
   width: 20px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .bar {
@@ -97,6 +108,8 @@
   border-radius: 6px;
   width: 350px;
   height: 30px;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 .bar.zero {
@@ -105,4 +118,78 @@
 
 .bar.today {
   background-color: #47dd29;
+}
+
+@media (max-width: 600px) {
+  .stats-container {
+    max-width: 80vw;
+    max-height: 55vh;
+  }
+
+  .figures {
+    padding: 0;
+    font-size: 11px;
+  }
+
+  .chart {
+    margin: 15px 0 0 0;
+  }
+
+  .bar {
+    max-width: 60vw;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .stats-container {
+    max-height: 70vh;
+    max-width: 80vw;
+    padding: 10px 10px 16px 10px;
+  }
+  .main-area {
+    padding-top: 10px;
+  }
+  .figures {
+    padding: 0 40px 0 40px;
+  }
+  .share {
+    height: 30px;
+    width: 120px;
+  }
+
+  .guess-row {
+    height: 30px;
+  }
+
+  .figure-item {
+    font-size: 11px;
+  }
+
+  .bar {
+    height: 25px;
+  }
+
+  .chart {
+    height: 45vh;
+  }
+
+}
+
+@media (max-height: 400px) and (orientation: landscape) {
+  .guess-row {
+    height: 25px;
+  }
+  .bar {
+    height: 21px;
+  }
+  .chart {
+    height: 40vh;
+  }
+  .figure-item {
+    font-size: 11px;
+  }
+  .share-button {
+    padding-top: 5px;
+  }
+
 }

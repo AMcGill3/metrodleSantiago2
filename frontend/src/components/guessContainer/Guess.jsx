@@ -101,7 +101,7 @@ export const Guess = ({
   const name = guess && guess.name ? guess.name : null;
   const lines = guess && guess.lines ? guess.lines : null;
 
-  if (name && targetStation && name === targetStation.name) {
+  if (name && name === targetStation?.name) {
     return (
       <div className="correct-guess">
         <div className="station-name-correct">{name}</div>
@@ -130,7 +130,7 @@ export const Guess = ({
                   className="circle"
                   key={line}
                   src={circle}
-                  alt={`Line ${line}`}
+                  alt={`Line ${line} ${!targetStation?.lines.includes(line) ? "wrong " : ""}`}
                 />
               );
             })}

@@ -7,7 +7,14 @@ import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 import logo from "../../assets/pageLogo.svg";
 
-export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, stopsFromTarget }) => {
+export const HowToPlay = ({
+  toggleHowToPlay,
+  stations,
+  theme,
+  graph,
+  nameToId,
+  stopsFromTarget,
+}) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
   };
@@ -35,10 +42,6 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
       <div
         className="map-container"
         style={{
-          width: "200px",
-          height: "200px",
-          overflow: "hidden",
-          position: "relative",
           margin: "0 auto",
           border: "0.5px solid black",
         }}
@@ -58,6 +61,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
         {Object.entries(lineMap).map(([name, src]) => {
           return (
             <img
+              className="line-blockers"
               key={name}
               src={src}
               alt={name}
@@ -65,7 +69,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
                 position: "absolute",
                 width: "1705px",
                 height: "1705px",
-                left: "-855px", // Have to minus 100 from this and top to make centered
+                left: "-855px",
                 top: "-446px",
               }}
             ></img>
@@ -79,10 +83,6 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
       <div
         className="map-container"
         style={{
-          width: "200px",
-          height: "200px",
-          overflow: "hidden",
-          position: "relative",
           margin: "0 auto",
           border: "0.5px solid black",
         }}
@@ -95,7 +95,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
             position: "absolute",
             width: "1705px",
             height: "1705px",
-            left: "-855px", // Have to minus 100 from this and top to make centered
+            left: "-855px",
             top: "-446px",
           }}
         />
@@ -104,6 +104,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
             if (name !== "1")
               return (
                 <img
+                  className="line-blockers"
                   key={name}
                   src={src}
                   alt={name}
@@ -111,17 +112,19 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
                     position: "absolute",
                     width: "1705px",
                     height: "1705px",
-                    left: "-855px", // Have to minus 100 from this and top to make centered
+                    left: "-855px",
                     top: "-446px",
                   }}
                 ></img>
               );
           }
         })}
+        {/* make this so it's just the image not the whole map */}
         {Object.entries(stationMap).map(([name, src]) => {
           if (name === "santalucía") {
             return (
               <img
+              className="station-labels"
                 key={name}
                 src={src}
                 alt={name}
@@ -129,7 +132,7 @@ export const HowToPlay = ({ toggleHowToPlay, stations, theme, graph, nameToId, s
                   position: "absolute",
                   width: "1705px",
                   height: "1705px",
-                  left: "-855px", // Have to minus 100 from this and top to make centered
+                  left: "-855px",
                   top: "-446px",
                 }}
               ></img>

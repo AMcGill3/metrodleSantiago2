@@ -11,7 +11,8 @@ export const Stats = ({
   lastPlayed,
   compareLastPlayed,
   stopsFromTarget,
-  checkWin
+  checkWin,
+  puzzleNumber,
 }) => {
   const exit = theme === "light" ? exitMenu : exitMenuDark;
   const totalWins = () => {
@@ -66,82 +67,94 @@ export const Stats = ({
     return result;
   };
 
+  const maxGuesses = findMostGuesses();
+
   return (
     <>
-      <button className="exit-stats-button" onClick={toggleStats}>
-        <img src={exit} className="exit-menu-img"></img>
-      </button>
-      <div className="figures">
-        <div className="figure-item">
-          <p>Jugado</p>
-          <h3>{played}</h3>
-        </div>
-        <div className="figure-item">
-          <p>Ganas</p>
-          <h3>{wins}</h3>
-        </div>
-        <div className="figure-item">
-          <p>Porcentaje Ganado</p>
-          <h3>
-            {" "}
-            {played > 0 && wins > 0
-              ? `${Math.round((wins / played) * 100)}%`
-              : "0%"}
-          </h3>
-        </div>
-        <div className="figure-item">
-          <p>Racha</p>
-          <h3>{user?.streak}</h3>
-        </div>
-        <div className="figure-item">
-          <p>Racha Máxima</p>
-          <h3>{user?.maxStreak}</h3>
-        </div>
-      </div>
-      <div className="chart">
-        {Array.from({ length: 6 }).map((_, i) => {
-          const guessCount = i + 1;
-          const winsForThisCount = user?.winsInXGuesses?.[guessCount] ?? 0;
-
-          const isTodayCorrectGuess =
-            lastPlayed &&
-            user?.game?.guesses?.length === guessCount &&
-            compareLastPlayed() &&
-            checkWin();
-
-          return (
-            <div key={i} className="guess-row">
-              <h3 className="number">{guessCount}</h3>
-              <p
-                className={`bar ${winsForThisCount === 0 ? "zero" : ""} ${
-                  isTodayCorrectGuess ? "today" : ""
-                } ${findMostGuesses() !== winsForThisCount ? "not-max" : ""}`}
-              ></p>
-              <p>{winsForThisCount}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="share-button">
-        <button
-          className="share"
-          onClick={() => {
-            const results = shareResults()
-            if (navigator.share) {
-              navigator.share({ results });
-            } else {
-
-              results.select();
-              results.setSelectionRange(0, 99999);
-              navigator.clipboard.writeText(results.valueOf())
-              alert("Results copied to clipboard")
-            }
-          }}
-        >
-          Compartir
-          <img src={shareSymbol} className="share-symbol"></img>
+      <div className="top">
+        <div>Metrodle Santiago # {puzzleNumber}</div>
+        <button className="exit-stats-button" onClick={toggleStats}>
+          <img src={exit} className="exit-menu-img"></img>
         </button>
+      </div>
+      <div className="main-area">
+        <div className="figures">
+          <div className="figure-item">
+            <p>Jugado</p>
+            <h3>{played}</h3>
+          </div>
+          <div className="figure-item">
+            <p>Ganas</p>
+            <h3>{wins}</h3>
+          </div>
+          <div className="figure-item">
+            <p>Porcentaje Ganado</p>
+            <h3>
+              {" "}
+              {played > 0 && wins > 0
+                ? `${Math.round((wins / played) * 100)}%`
+                : "0%"}
+            </h3>
+          </div>
+          <div className="figure-item">
+            <p>Racha</p>
+            <h3>{user?.streak}</h3>
+          </div>
+          <div className="figure-item">
+            <p>Racha Máxima</p>
+            <h3>{user?.maxStreak}</h3>
+          </div>
+        </div>
+        <div className="chart">
+          {Array.from({ length: 6 }).map((_, i) => {
+            const guessCount = i + 1;
+            const winsForThisCount = user?.winsInXGuesses?.[guessCount] ?? 0;
+
+            const isTodayCorrectGuess =
+              lastPlayed &&
+              user?.game?.guesses?.length === guessCount &&
+              compareLastPlayed() &&
+              checkWin();
+
+            return (
+              <div key={i} className="guess-row">
+                <h3 className="number">{guessCount}</h3>
+                <div
+                  className={`bar ${winsForThisCount === 0 ? "zero" : ""} ${
+                    isTodayCorrectGuess ? "today" : ""
+                  }`}
+                  style={{
+                    width:
+                      winsForThisCount === 0
+                        ? "11px"
+                        : `${(winsForThisCount / maxGuesses) * 100}%`,
+                  }}
+                ></div>
+                <div>{winsForThisCount}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="share-button">
+          <button
+            className="share"
+            onClick={() => {
+              const results = shareResults();
+              if (navigator.share) {
+                navigator.share({ results });
+              } else {
+                results.select();
+                results.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(results.valueOf());
+                alert("Results copied to clipboard");
+              }
+            }}
+          >
+            Compartir
+            <img src={shareSymbol} className="share-symbol"></img>
+          </button>
+        </div>
       </div>
     </>
   );

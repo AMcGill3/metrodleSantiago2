@@ -47,8 +47,8 @@ export const StationContainer = ({
             ? normalizedSearch.length
             : 0;
 
-          const start = normalizedName.slice(0, matchLength);
-          const rest = normalizedName.slice(matchLength);
+          const start = station.name.toUpperCase().replace(/\s+/g, "").slice(0, matchLength);
+          const rest = station.name.toUpperCase().replace(/\s+/g, "").slice(matchLength);
 
           return (
             <div
@@ -58,9 +58,9 @@ export const StationContainer = ({
             >
               <div className="station-name">
                 <span className="highlight">
-                  {start.toUpperCase().replace(/\s+/g, "")}
+                  {start}
                 </span>
-                {rest.toUpperCase().replace(/\s+/g, "")}
+                {rest}
               </div>
               <div className="station-circles">
                 {station.lines.map((line) => {

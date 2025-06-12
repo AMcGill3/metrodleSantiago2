@@ -48,7 +48,6 @@ export const Countdown = ({
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Optionally pad numbers for 2-digit format
         const pad = (n) => (n < 10 ? "0" + n : n);
         setTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
       }

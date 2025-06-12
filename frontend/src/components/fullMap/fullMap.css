@@ -5,17 +5,13 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .map {
   position: relative;
-  width: 1705px;
-  height: 1705px;
+  width: 100vw;
+  height: 100vh;
   overflow: visible;
 }
 
@@ -45,7 +41,7 @@
 }
 
 .exit-map-button {
-  position: absolute;
+  position: fixed;
   top: 20px;
   right: 30px;
   background: none;
