@@ -113,7 +113,7 @@ export const Stats = ({
             const isTodayCorrectGuess =
               lastPlayed &&
               user?.game?.guesses?.length === guessCount &&
-              compareLastPlayed() &&
+              compareLastPlayed &&
               checkWin();
 
             return (

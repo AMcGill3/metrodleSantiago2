@@ -12,7 +12,7 @@ export const Countdown = ({
   const [timeLeft, setTimeLeft] = useState("");
 
   const calculateTotalJourney = () => {
-    if (compareLastPlayed()) {
+    if (compareLastPlayed) {
       let totalJourney = 0;
       for (let i = 0; i < guesses?.length - 1; i++) {
         const diff = bfsDistance(

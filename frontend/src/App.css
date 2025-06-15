@@ -100,11 +100,6 @@ body {
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 1;
-  pointer-events: none;
-}
-
-.backdrop.active {
-  display: block;
   pointer-events: auto;
 }
 

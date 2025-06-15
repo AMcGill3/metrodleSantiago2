@@ -12,7 +12,7 @@ import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
 import nationalRailStations from "../src/assets/NationalRailStations.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { updateUser, createUser, getUser } from "./services/users";
 import { getTargetStation } from "./services/stations";
 import { normalize } from "../../normalize.js";
@@ -108,10 +108,9 @@ function App() {
     }
   }, [graph, targetStation, stations, user]);
 
-  const compareLastPlayed = () => {
-    if (!lastPlayed) return false;
-    return lastPlayed.getTime() === today.getTime();
-  };
+  const compareLastPlayed = useMemo(() => {
+  return lastPlayed?.getTime() === today.getTime();
+}, [lastPlayed, today]);
 
   const checkWin = () => {
     return guessedStationNames?.includes(normalize(targetStation?.name));
@@ -173,10 +172,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loading && compareLastPlayed()) {
-      setTimeout(() => {
-        setShowStats(true);
-      }, 200);
+    if (!loading && compareLastPlayed) {
+      setShowStats(true);
     }
   }, [loading, lastPlayed]);
 
@@ -200,7 +197,7 @@ function App() {
   useEffect(() => {
     if (!targetStation) return;
     if (
-      !compareLastPlayed() &&
+      !compareLastPlayed &&
       (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
     ) {
       setCorrectStationPopUp(true);
@@ -213,12 +210,12 @@ function App() {
       }, 4000);
     }
 
-    if (checkWin() && !compareLastPlayed()) {
+    if (checkWin() && !compareLastPlayed) {
       updateUser(user?.username, true, today, guessedStationNames.length);
     } else if (
       guessedStationNames.length === 6 &&
       !checkWin() &&
-      !compareLastPlayed()
+      !compareLastPlayed
     ) {
       updateUser(user?.username, false, today);
     }
@@ -268,9 +265,9 @@ function App() {
     const t = new Date().getHours();
     return (
       <div className="loading-screen">
-        {t < 12 && <img src={loadingSymbolMorning}></img>}
-        {t < 18 && t >= 12 && <img src={loadingSymbolAfternoon}></img>}
-        {t >= 18 && t < 24 && <img src={loadingSymbolEvening}></img>}
+        {t < 12 && <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>}
+        {t < 18 && t >= 12 && <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>}
+        {t >= 18 && t < 24 && <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>}
       </div>
     );
   }
@@ -344,11 +341,12 @@ function App() {
         correctStationPopUp ||
         showStats) && <div className="backdrop"></div>}
       <div className="main-area-container">
-        {compareLastPlayed() && (
+        {compareLastPlayed && (
           <button className="full-map-button" onClick={toggleFullMap}>
             <img
               className="full-map-button-img"
               src={theme === "light" ? fullMapButton : fullMapButtonDark}
+              alt={"mapa completa"}
             ></img>
           </button>
         )}
@@ -397,7 +395,7 @@ function App() {
             <img
               className="map"
               src={map}
-              alt="Metro Map"
+              alt="Mapa del metro"
               style={{
                 position: "absolute",
                 width: "1705px",
@@ -419,13 +417,13 @@ function App() {
               }}
             />
             {Object.entries(lineMap).map(([name, src]) => {
-              if (!guessedLines.has(name) && !compareLastPlayed()) {
+              if (!guessedLines.has(name) && !compareLastPlayed) {
                 return (
                   <img
                     className="line-blockers"
                     key={name}
                     src={src}
-                    alt={`bloqueador de línea`}
+                    alt={"bloqueador de línea"}
                     style={{
                       position: "absolute",
                       width: "1705px",
@@ -460,7 +458,7 @@ function App() {
                   150;
               if (
                 close &&
-                (compareLastPlayed() ||
+                (compareLastPlayed ||
                   guessedStationNames.includes(normalize(name)))
               ) {
                 return (
@@ -492,7 +490,7 @@ function App() {
                 );
               }
             })}
-            {compareLastPlayed() && (
+            {compareLastPlayed && (
               <div className="national-rail-stations">
                 <img
                   src={nationalRailStations}
@@ -515,6 +513,7 @@ function App() {
                         : `-${targetY - 100}px`
                       : "0px",
                   }}
+                  alt={"Estaciones nacionales"}
                 ></img>
               </div>
             )}
@@ -554,7 +553,7 @@ function App() {
           </div>
         )}
       </div>
-      {(!compareLastPlayed() || !lastPlayed) && (
+      {(!compareLastPlayed || !lastPlayed) && (
         <div className="keyboard-container">
           <Keyboard
             search={search}
@@ -571,7 +570,7 @@ function App() {
           ></Keyboard>
         </div>
       )}
-      {compareLastPlayed() && (
+      {compareLastPlayed && (
         <div className="countdown-container">
           <Countdown
             today={today}

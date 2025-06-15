@@ -10,11 +10,11 @@ export const FullMap = ({
 }) => {
   return (
     <>
-      <button className="exit-map-button" onClick={toggleFullMap}>
+      <button className="exit-map-button" onClick={toggleFullMap} alt={"salir de mapa"}>
         <img className="exit-menu-img" src={exitMapSymbol}></img>
       </button>
       <div className="map">
-        <img className="map-background" src={fullMap}></img>
+        <img className="map-background" src={fullMap} alt={"mapa completa"}></img>
         {guesses.map((guess, guessIndex) => {
           return (
             <div

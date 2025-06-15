@@ -46,9 +46,10 @@ export const Guess = ({
     ];
   };
 
-  const chooseArrow = (direction) => {
-    const x = direction[0];
-    const y = direction[1];
+  const chooseArrow = (dir) => {
+    const x = dir[0];
+    const y = dir[1];
+
     if (x > 0 && y >= 0) {
       if (y <= 25) {
         return east;
@@ -73,10 +74,11 @@ export const Guess = ({
       } else {
         return northWest;
       }
-    }
-    if (x === 0 && y === 0) {
-      return "correct";
-    } else {
+    } else if (x === 0 && y < 0) {
+      return up;
+    } else if (x === 0 && y > 0) {
+      return down;
+    } else if (x < 0 && y > 0) {
       if (y <= 25) {
         return west;
       } else if (x >= -25) {
@@ -84,7 +86,11 @@ export const Guess = ({
       } else {
         return southWest;
       }
+    } else if (x === 0 && y === 0) {
+      return "correct";
     }
+
+    return southWest;
   };
 
   const direction =
@@ -112,6 +118,26 @@ export const Guess = ({
     );
   }
 
+  const translateAlt = (dir) => {
+    const directionMap = {
+      up: "norte",
+      northEast: "noreste",
+      east: "este",
+      southEast: "sureste",
+      down: "sur",
+      southWest: "suroeste",
+      west: "oeste",
+      northWest: "noroeste",
+    };
+
+    const arrowImg = chooseArrow(dir);
+    const fileName = arrowImg?.split("/")?.pop()?.replace(".svg", "");
+
+    const normalized = fileName?.replace("Dark", "");
+
+    return directionMap[normalized] || "dirección";
+  };
+
   return (
     <div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
       <div className="left">
@@ -130,7 +156,9 @@ export const Guess = ({
                   className="circle"
                   key={line}
                   src={circle}
-                  alt={`Line ${line} ${!targetStation?.lines.includes(line) ? "wrong " : ""}`}
+                  alt={`Línea ${line} ${
+                    !targetStation?.lines.includes(line) ? "incorecta " : ""
+                  }`}
                 />
               );
             })}
@@ -146,7 +174,7 @@ export const Guess = ({
           </div>
           {arrow !== "correct" && (
             <div className="direction">
-              <img src={arrow} alt="direction" />
+              <img src={arrow} alt={translateAlt(direction)} />
             </div>
           )}
         </div>

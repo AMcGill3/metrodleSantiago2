@@ -11,7 +11,11 @@ export const About = ({ toggleAbout, theme }) => {
       <div className="header">
         <img src={logo} className="logo"></img>
         <h1 className="menuComponentTitle">Sobre</h1>
-        <button className="exit-about-button" onClick={toggleAbout}>
+        <button
+          className="exit-about-button"
+          onClick={toggleAbout}
+          alt={"salir de la sección sobre"}
+        >
           <img src={exit} className="exit-menu-img"></img>
         </button>
       </div>
@@ -21,9 +25,9 @@ export const About = ({ toggleAbout, theme }) => {
         ciudad de Santiago.
         <br></br>
         <br></br>
-        Con gracias a mi amigo Sebastian Ávila por su amistad e apoyo, los
-        creadores del juego original por dándome su permiso hacer este juego, y
-        todas las personas que me apoyaban durante el proceso
+        Gracias a mi amigo Sebastian Ávila por su amistad y apoyo, a los
+        creadores del juego original por darme su permiso para hacer este juego,
+        y todas las personas que me han apoyado durante el proceso.
       </p>
     </div>
   );
