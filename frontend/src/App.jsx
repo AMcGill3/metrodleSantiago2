@@ -25,13 +25,10 @@ import fullMapButtonDark from "../src/assets/fullMapButtonDark.svg";
 import loadingSymbolMorning from "../src/assets/loadingSymbols/loadingSymbolMorning.svg";
 import loadingSymbolAfternoon from "../src/assets/loadingSymbols/loadingSymbolAfternoon.svg";
 import loadingSymbolEvening from "../src/assets/loadingSymbols/loadingSymbolEvening.svg";
+import { DateTime } from "luxon";
 
 function App() {
-  const [today] = useState(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
+  const [today] = useState(() => DateTime.now().setZone("America/Santiago").startOf("day"));
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [showFullMap, setShowFullMap] = useState(false);
@@ -45,7 +42,7 @@ function App() {
   const [guessedLines, setGuessedLines] = useState(new Set());
   const [guessedStationNames, setGuessedStationNames] = useState([]);
   const [targetStation, setTargetStation] = useState(null);
-  const [puzzleNumber, setPuzzleNumber] = useState(null)
+  const [puzzleNumber, setPuzzleNumber] = useState(null);
   const [correctStationPopUp, setCorrectStationPopUp] = useState(false);
   const [lastPlayed, setLastPlayed] = useState(null);
   const [showStats, setShowStats] = useState(false);
@@ -83,7 +80,7 @@ function App() {
         const res = await getTargetStation();
         if (res?.station) {
           setTargetStation(res.station);
-          setPuzzleNumber(res.number)
+          setPuzzleNumber(res.number);
         }
       } catch (err) {
         console.error("Failed to load target station:", err);
@@ -109,8 +106,9 @@ function App() {
   }, [graph, targetStation, stations, user]);
 
   const compareLastPlayed = useMemo(() => {
-  return lastPlayed?.getTime() === today.getTime();
-}, [lastPlayed, today]);
+    if (!lastPlayed) return false;
+    return lastPlayed.hasSame(today, "day");
+  }, [lastPlayed, today]);
 
   const checkWin = () => {
     return guessedStationNames?.includes(normalize(targetStation?.name));
@@ -159,8 +157,7 @@ function App() {
           setGuesses(userData.game.guesses || []);
           setGuessedLines(new Set(userData.game.guessedLines || []));
           setGuessedStationNames(userData.game.guessedStationNames || []);
-          const date = new Date(userData.lastPlayed);
-          date.setHours(0, 0, 0, 0);
+          const date = DateTime.fromISO(userData.lastPlayed).startOf("day");
           setLastPlayed(date);
         }
       } catch (err) {
@@ -261,13 +258,20 @@ function App() {
   const toggleFullMap = () => {
     setShowFullMap((prev) => !prev);
   };
+
+  console.log('today:', today);
+  console.log('lastPlayed:', lastPlayed);
   if (loading) {
     const t = new Date().getHours();
     return (
       <div className="loading-screen">
         {t < 12 && <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>}
-        {t < 18 && t >= 12 && <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>}
-        {t >= 18 && t < 24 && <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>}
+        {t < 18 && t >= 12 && (
+          <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>
+        )}
+        {t >= 18 && t < 24 && (
+          <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>
+        )}
       </div>
     );
   }

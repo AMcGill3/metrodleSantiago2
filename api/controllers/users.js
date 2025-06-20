@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import mongoose from "mongoose";
 import { normalize } from "../../normalize.js";
+import { DateTime } from "luxon";
 
 async function createUser(req, res) {
   try {
@@ -35,8 +36,9 @@ async function getUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  const dateToday = new Date(req.body.today);
-  dateToday.setHours(0, 0, 0, 0)
+  const dateToday = DateTime.fromISO(req.body.today, {
+    zone: "America/Santiago",
+  }).startOf("day");
   try {
     const user = await User.findOne({
       _id: new mongoose.Types.ObjectId(req.body.user),
@@ -50,10 +52,12 @@ async function updateUser(req, res) {
       user.winsInXGuesses[req.body.guessNumber] += 1;
       user.markModified("winsInXGuesses");
       if (user.lastPlayed) {
-        const lastPlayed = new Date(user.lastPlayed);
-        lastPlayed.setHours(0, 0, 0, 0);
+        const lastPlayed = DateTime.fromJSDate(user.lastPlayed, {
+          zone: "America/Santiago",
+        }).startOf("day");
 
-        const difference = (dateToday - lastPlayed) / 86400000;
+        const difference = dateToday.diff(lastPlayed, "days").days;
+
         if (difference === 1) {
           if (user.maxStreak === user.streak) {
             user.maxStreak += 1;
@@ -66,9 +70,11 @@ async function updateUser(req, res) {
         user.streak = 1;
         user.maxStreak = 1;
       }
+    } else {
+      user.streak = 0;
     }
 
-    user.lastPlayed = dateToday;
+    user.lastPlayed = dateToday.toJSDate();
 
     await user.save();
     return res.status(200).json({ message: "user updated" });

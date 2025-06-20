@@ -34,28 +34,30 @@ export const Stats = ({
   const shareResults = () => {
     const gameGuesses = user.game.guesses;
     const totalGuesses = gameGuesses.length;
-    let result = "";
+    let result = `Metrodle Santiago # ${puzzleNumber} \n`;
 
     const gotIt = gameGuesses[totalGuesses - 1]?.name === targetStation.name;
 
-    gameGuesses.forEach((guess, i) => {
-      const hasCorrectLine = guess.lines.some((line) =>
-        targetStation.lines.includes(line)
-      );
-      result += hasCorrectLine ? "🟩 " : "⬛ ";
+    if (gotIt && totalGuesses !== 1) {
+      gameGuesses.forEach((guess, i) => {
+        const hasCorrectLine = guess.lines.some((line) =>
+          targetStation.lines.includes(line)
+        );
+        result += hasCorrectLine ? "🟩 " : "⬛ ";
 
-      const stops = stopsFromTarget(guess.name);
-      if (stops === 0) {
-        result += "🚇";
-      } else {
-        result += `${stops} ${stops === 1 ? "stop" : "stops"} away`;
-      }
+        const stops = stopsFromTarget(guess.name);
+        if (stops === 0) {
+          result += "🚇";
+        } else {
+          result += `${stops} ${stops === 1 ? "parada" : "paradas"} más`;
+        }
 
-      result += "\n";
-    });
+        result += "\n";
+      });
+    }
 
     if (totalGuesses === 1 && gotIt) {
-      result += "🎯 1/6";
+      result += "🟩 🎯\n1/6";
     } else if (gotIt) {
       result += `${totalGuesses}/6`;
     } else {
