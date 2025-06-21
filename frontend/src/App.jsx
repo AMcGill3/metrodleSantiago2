@@ -28,7 +28,9 @@ import loadingSymbolEvening from "../src/assets/loadingSymbols/loadingSymbolEven
 import { DateTime } from "luxon";
 
 function App() {
-  const [today] = useState(() => DateTime.now().setZone("America/Santiago").startOf("day"));
+  const [today] = useState(() =>
+    DateTime.now().setZone("America/Santiago").startOf("day")
+  );
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [showFullMap, setShowFullMap] = useState(false);
@@ -125,6 +127,14 @@ function App() {
     return coordinate > 1550;
   };
 
+  const positionOnMap = (coordinate) => {
+    return tooClose(coordinate) || tooFar(coordinate)
+      ? tooClose(coordinate)
+        ? 0
+        : 1505
+      : -(coordinate - 100);
+  };
+
   const nameToId =
     nodes &&
     Object.entries(nodes).reduce((acc, [id, name]) => {
@@ -199,11 +209,11 @@ function App() {
     ) {
       setCorrectStationPopUp(true);
       setTimeout(async () => {
+        setLastPlayed(today);
         setCorrectStationPopUp(false);
         const updatedUser = await getUser(user.username);
         setUser(updatedUser);
         setShowStats(true);
-        setLastPlayed(today);
       }, 4000);
     }
 
@@ -259,8 +269,6 @@ function App() {
     setShowFullMap((prev) => !prev);
   };
 
-  console.log('today:', today);
-  console.log('lastPlayed:', lastPlayed);
   if (loading) {
     const t = new Date().getHours();
     return (
@@ -405,18 +413,10 @@ function App() {
                 width: "1705px",
                 height: "1705px",
                 left: targetStation
-                  ? tooClose(targetX) || tooFar(targetX)
-                    ? tooClose(targetX)
-                      ? "0px"
-                      : "1505px"
-                    : `-${targetX - 100}px`
+                  ? `${positionOnMap(targetX)}px`
                   : "0px",
                 top: targetStation
-                  ? tooClose(targetY) || tooFar(targetY)
-                    ? tooClose(targetY)
-                      ? "0px"
-                      : "-1505px"
-                    : `-${targetY - 100}px`
+                  ? `${positionOnMap(targetY)}px`
                   : "0px",
               }}
             />
@@ -433,18 +433,10 @@ function App() {
                       width: "1705px",
                       height: "1705px",
                       left: targetStation
-                        ? tooClose(targetX) || tooFar(targetX)
-                          ? tooClose(targetX)
-                            ? "0px"
-                            : "1505px"
-                          : `-${targetX - 100}px`
+                        ? `${positionOnMap(targetX)}px`
                         : "0px",
                       top: targetStation
-                        ? tooClose(targetY) || tooFar(targetY)
-                          ? tooClose(targetY)
-                            ? "0px"
-                            : "-1505px"
-                          : `-${targetY - 100}px`
+                        ? `${positionOnMap(targetY)}px`
                         : "0px",
                     }}
                   ></img>
@@ -476,18 +468,10 @@ function App() {
                       width: "1705px",
                       height: "1705px",
                       left: targetStation
-                        ? tooClose(targetX) || tooFar(targetX)
-                          ? tooClose(targetX)
-                            ? "0px"
-                            : "1505px"
-                          : `-${targetX - 100}px`
+                        ? `${positionOnMap(targetX)}px`
                         : "0px",
                       top: targetStation
-                        ? tooClose(targetY) || tooFar(targetY)
-                          ? tooClose(targetY)
-                            ? "0px"
-                            : "-1505px"
-                          : `-${targetY - 100}px`
+                        ? `${positionOnMap(targetY)}px`
                         : "0px",
                     }}
                   ></img>
@@ -503,18 +487,10 @@ function App() {
                     width: "1705px",
                     height: "1705px",
                     left: targetStation
-                      ? tooClose(targetX) || tooFar(targetX)
-                        ? tooClose(targetX)
-                          ? "0px"
-                          : "1505px"
-                        : `-${targetX - 100}px`
+                      ? `${positionOnMap(targetX)}px`
                       : "0px",
                     top: targetStation
-                      ? tooClose(targetY) || tooFar(targetY)
-                        ? tooClose(targetY)
-                          ? "0px"
-                          : "-1505px"
-                        : `-${targetY - 100}px`
+                      ? `${positionOnMap(targetY)}px`
                       : "0px",
                   }}
                   alt={"Estaciones nacionales"}
