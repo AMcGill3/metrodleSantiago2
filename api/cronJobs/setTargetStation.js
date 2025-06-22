@@ -2,44 +2,42 @@ import cron from "node-cron";
 import Station from "../models/station.js";
 import TargetStation from "../models/targetStation.js";
 
-export default function startCombinedTargetStationJob() {
-  const CRON_TZ = "America/Santiago";
+const CRON_TZ = "America/Santiago";
+export async function setTargetStation() {
+  try {
+    const currentTarget = await TargetStation.findOne({});
+    const currentStationId = currentTarget?.value;
 
-  cron.schedule(
-    "0 0 * * *",
-    async () => {
-      try {
-        const [randomStation] = await Station.aggregate([
-          { $sample: { size: 1 } },
-        ]);
+    const stations = await Station.find({ _id: { $ne: currentStationId } });
 
-        if (randomStation) {
-          const updatedDoc = await TargetStation.findOneAndUpdate(
-            {},
-            {
-              value: randomStation._id,
-              $inc: { number: 1 },
-              updatedAt: new Date(),
-            },
-            {
-              upsert: true,
-              new: true,
-              setDefaultsOnInsert: true,
-            }
-          );
+    const randomStation = stations[Math.floor(Math.random() * stations.length)];
 
-          console.log(
-            `[CRON] Target station set to "${randomStation.name}", puzzle number is now ${updatedDoc.number}`
-          );
-        }
-      } catch (err) {
-        console.error("[CRON] Failed to update target station & puzzle number:", err);
+    const updatedDoc = await TargetStation.findOneAndUpdate(
+      {},
+      {
+        value: randomStation._id,
+        $inc: { number: 1 },
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
       }
-    },
-    {
-      timezone: CRON_TZ,
-    }
-  );
+    );
 
-  console.log("[CRON] Combined target station + puzzle number job scheduled.");
+    console.log(
+      `[CRON] Target station set to "${randomStation.name}", puzzle number is now ${updatedDoc.number}`
+    );
+  } catch (err) {
+    console.error("[CRON] Failed to update target station & puzzle number:", err);
+  }
+}
+
+
+export default function startTargetStationJob() {
+  cron.schedule("0 0 * * *", setTargetStation, {
+    timezone: CRON_TZ,
+  });
+
+  console.log("[CRON] Target station job scheduled for midnight daily.");
 }
