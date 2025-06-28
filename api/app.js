@@ -6,12 +6,13 @@ import usersRouter from "./routes/users.js";
 import stationsRouter from "./routes/stations.js";
 
 const app = express(); // ✅ Declare first, then export
+const origin = import.meta.env.VITE_FRONTEND_URL
 
 // Allow requests from any client
 // docs: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 // docs: https://expressjs.com/en/resources/middleware/cors.html
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: origin,
   credentials: true,
 }));
 
