@@ -7,14 +7,14 @@ import { Menu } from "./components/Menu/Menu";
 import { Theme } from "./components/Theme/Theme";
 import { Stats } from "./components/Stats/Stats";
 import { StationContainer } from "./components/StationContainer/StationContainer";
-import { CorrectGuess } from "./components/correctGuess/correctGuess";
+import { CorrectStation } from "./components/CorrectStation/CorrectStation.jsx";
 import map from "../src/assets/metroMapBackground.svg";
 import lineMap from "./utils/loadLinesSVGs";
 import stationMap from "./utils/loadStationSvgs";
 import nationalRailStations from "../src/assets/NationalRailStations.svg";
 import { useState, useEffect, useMemo } from "react";
 import { updateUser, createUser, getUser } from "./services/users";
-import { getTargetStation } from "./services/stations";
+import { getTargetStation, getAllStations } from "./services/stations";
 import { normalize } from "../../normalize.js";
 import { buildGraph, bfsDistance } from "./utils/graphUtils.js";
 import { loadGraphFromTGF } from "../src/utils/loadGraphFromTGF.js";
@@ -93,10 +93,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetch("stations.json")
-      .then((response) => response.json())
-      .then((data) => setStations(data))
-      .catch((err) => console.error("Failed to load stations", err));
+    async function fetchStations() {
+      try {
+        const res = await getAllStations();
+        if (res?.stations) {
+          setStations(res.stations);
+        }
+      } catch (err) {
+        console.error("Failed to fetch stations:", err);
+      }
+    }
+    fetchStations();
   }, []);
 
   useEffect(() => {
@@ -134,6 +141,9 @@ function App() {
         : 1505
       : -(coordinate - 100);
   };
+
+  const mapX = positionOnMap(targetX);
+  const mapY = positionOnMap(targetY);
 
   const nameToId =
     nodes &&
@@ -182,7 +192,7 @@ function App() {
     if (!loading && compareLastPlayed) {
       setShowStats(true);
     }
-  }, [loading, lastPlayed]);
+  }, [loading, compareLastPlayed]);
 
   const stopsFromTarget = (stationName) => {
     if (
@@ -203,6 +213,30 @@ function App() {
   // end game logic
   useEffect(() => {
     if (!targetStation) return;
+
+    const handleGameEnd = async () => {
+      let updatedUser;
+
+      if (checkWin() && !compareLastPlayed) {
+        updatedUser = await updateUser(
+          user?.username,
+          true,
+          today,
+          guessedStationNames.length
+        );
+      } else if (
+        guessedStationNames.length === 6 &&
+        !checkWin() &&
+        !compareLastPlayed
+      ) {
+        updatedUser = await updateUser(user?.username, false, today);
+      }
+
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    };
+
     if (
       !compareLastPlayed &&
       (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
@@ -211,20 +245,16 @@ function App() {
       setTimeout(async () => {
         setLastPlayed(today);
         setCorrectStationPopUp(false);
-        const updatedUser = await getUser(user.username);
-        setUser(updatedUser);
         setShowStats(true);
       }, 4000);
-    }
-
-    if (checkWin() && !compareLastPlayed) {
-      updateUser(user?.username, true, today, guessedStationNames.length);
+    } else if (checkWin() && !compareLastPlayed) {
+      handleGameEnd();
     } else if (
       guessedStationNames.length === 6 &&
       !checkWin() &&
       !compareLastPlayed
     ) {
-      updateUser(user?.username, false, today);
+      handleGameEnd();
     }
   }, [guessedStationNames]);
 
@@ -270,14 +300,17 @@ function App() {
   };
 
   if (loading) {
-    const t = new Date().getHours();
+    const t = DateTime.now().setZone("America/Santiago");
+    const hour = t.hour;
     return (
       <div className="loading-screen">
-        {t < 12 && <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>}
-        {t < 18 && t >= 12 && (
+        {hour < 12 && (
+          <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>
+        )}
+        {hour < 18 && hour >= 12 && (
           <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>
         )}
-        {t >= 18 && t < 24 && (
+        {hour >= 18 && hour < 24 && (
           <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>
         )}
       </div>
@@ -286,7 +319,10 @@ function App() {
 
   return (
     <>
-      <div className={`stats-container ${showStats ? "open" : "closed"}`}>
+      <div
+        className={`stats-container ${showStats ? "open" : "closed"}`}
+        data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
+      >
         <Stats
           toggleStats={toggleStats}
           theme={theme}
@@ -354,7 +390,11 @@ function App() {
         showStats) && <div className="backdrop"></div>}
       <div className="main-area-container">
         {compareLastPlayed && (
-          <button className="full-map-button" onClick={toggleFullMap}>
+          <button
+            className="full-map-button"
+            data-testid="full-map-button"
+            onClick={toggleFullMap}
+          >
             <img
               className="full-map-button-img"
               src={theme === "light" ? fullMapButton : fullMapButtonDark}
@@ -412,12 +452,8 @@ function App() {
                 position: "absolute",
                 width: "1705px",
                 height: "1705px",
-                left: targetStation
-                  ? `${positionOnMap(targetX)}px`
-                  : "0px",
-                top: targetStation
-                  ? `${positionOnMap(targetY)}px`
-                  : "0px",
+                left: targetStation ? `${mapX}px` : "0px",
+                top: targetStation ? `${mapY}px` : "0px",
               }}
             />
             {Object.entries(lineMap).map(([name, src]) => {
@@ -432,12 +468,8 @@ function App() {
                       position: "absolute",
                       width: "1705px",
                       height: "1705px",
-                      left: targetStation
-                        ? `${positionOnMap(targetX)}px`
-                        : "0px",
-                      top: targetStation
-                        ? `${positionOnMap(targetY)}px`
-                        : "0px",
+                      left: targetStation ? `${mapX}px` : "0px",
+                      top: targetStation ? `${mapY}px` : "0px",
                     }}
                   ></img>
                 );
@@ -467,12 +499,8 @@ function App() {
                       position: "absolute",
                       width: "1705px",
                       height: "1705px",
-                      left: targetStation
-                        ? `${positionOnMap(targetX)}px`
-                        : "0px",
-                      top: targetStation
-                        ? `${positionOnMap(targetY)}px`
-                        : "0px",
+                      left: targetStation ? `${mapX}px` : "0px",
+                      top: targetStation ? `${mapY}px` : "0px",
                     }}
                   ></img>
                 );
@@ -486,12 +514,8 @@ function App() {
                     position: "absolute",
                     width: "1705px",
                     height: "1705px",
-                    left: targetStation
-                      ? `${positionOnMap(targetX)}px`
-                      : "0px",
-                    top: targetStation
-                      ? `${positionOnMap(targetY)}px`
-                      : "0px",
+                    left: targetStation ? `${mapX}px` : "0px",
+                    top: targetStation ? `${mapY}px` : "0px",
                   }}
                   alt={"Estaciones nacionales"}
                 ></img>
@@ -504,7 +528,7 @@ function App() {
             correctStationPopUp ? "open" : "closed"
           }`}
         >
-          <CorrectGuess targetStation={targetStation}></CorrectGuess>
+          <CorrectStation targetStation={targetStation}></CorrectStation>
         </div>
 
         <>
@@ -522,6 +546,7 @@ function App() {
           <div className="stations-container">
             <StationContainer
               search={search}
+              setSearch={setSearch}
               stations={stations}
               setFilteredStations={setFilteredStations}
               filteredStations={filteredStations}
@@ -534,7 +559,7 @@ function App() {
         )}
       </div>
       {(!compareLastPlayed || !lastPlayed) && (
-        <div className="keyboard-container">
+        <div className="keyboard-container" data-testid="keyboard-container">
           <Keyboard
             search={search}
             setSearch={setSearch}
@@ -547,11 +572,12 @@ function App() {
             showMenu={showMenu}
             today={today}
             user={user}
+            guessedStationNames={guessedStationNames}
           ></Keyboard>
         </div>
       )}
       {compareLastPlayed && (
-        <div className="countdown-container">
+        <div className="countdown-container" data-testid="countdown">
           <Countdown
             today={today}
             bfsDistance={bfsDistance}

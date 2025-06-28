@@ -74,37 +74,37 @@ export const Stats = ({
   return (
     <>
       <div className="top">
-        <div>Metrodle Santiago # {puzzleNumber}</div>
+        <div data-testid="puzzle-number">Metrodle Santiago # {puzzleNumber}</div>
         <button className="exit-stats-button" onClick={toggleStats}>
           <img src={exit} className="exit-menu-img"></img>
         </button>
       </div>
       <div className="main-area">
         <div className="figures">
-          <div className="figure-item">
+          <div className="figure-item" data-testid="figure-item">
             <p>Jugado</p>
-            <h3>{played}</h3>
+            <h3 data-testid="played">{played}</h3>
           </div>
-          <div className="figure-item">
+          <div className="figure-item" data-testid="figure-item">
             <p>Ganas</p>
-            <h3>{wins}</h3>
+            <h3 data-testid="wins">{wins}</h3>
           </div>
-          <div className="figure-item">
+          <div className="figure-item" data-testid="figure-item">
             <p>Porcentaje Ganado</p>
-            <h3>
+            <h3 data-testid="percent-won">
               {" "}
               {played > 0 && wins > 0
                 ? `${Math.round((wins / played) * 100)}%`
                 : "0%"}
             </h3>
           </div>
-          <div className="figure-item">
+          <div className="figure-item" data-testid="figure-item">
             <p>Racha</p>
-            <h3>{user?.streak}</h3>
+            <h3 data-testid="streak">{user?.streak}</h3>
           </div>
-          <div className="figure-item">
+          <div className="figure-item" data-testid="figure-item">
             <p>Racha Máxima</p>
-            <h3>{user?.maxStreak}</h3>
+            <h3 data-testid="max-streak">{user?.maxStreak}</h3>
           </div>
         </div>
         <div className="chart">

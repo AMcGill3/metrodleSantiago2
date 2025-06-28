@@ -4,7 +4,7 @@ import "./guessContainer.css";
 
 export const GuessContainer = ({ guesses, guessedLines, targetStation, stopsFromTarget, theme }) => {
   return (
-    <div className="guess-container">
+    <div className="guess-container" data-testid="guess-container">
       <Guess
         guessed={guesses.length > 0}
         guess={guesses.length > 0 ? guesses[0] : null}

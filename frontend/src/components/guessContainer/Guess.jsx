@@ -109,8 +109,13 @@ export const Guess = ({
 
   if (name && name === targetStation?.name) {
     return (
-      <div className="correct-guess">
-        <div className="station-name-correct">{name}</div>
+      <div className="correct-guess" data-testid="correct-guess">
+        <div
+          className="station-name-correct"
+          data-testid="station-name-correct"
+        >
+          {name}
+        </div>
         <h6 className="correct-guess-extra-message">
           Deje bajar antes de subir
         </h6>
@@ -119,6 +124,7 @@ export const Guess = ({
   }
 
   const translateAlt = (dir) => {
+    if (!dir) return "dirección";
     const directionMap = {
       up: "norte",
       northEast: "noreste",
@@ -139,25 +145,35 @@ export const Guess = ({
   };
 
   return (
-    <div className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}>
+    <div
+      className={`guess-card ${guessed ? "guessed" : "not-guessed"}`}
+      data-testid={`guess-card-${guessed ? "guessed" : "not-guessed"}`}
+    >
       <div className="left">
-        {name && <div className="station-name">{name}</div>}
+        {name && (
+          <div className="guess-station-name" data-testid="guess-station-name">
+            {name}
+          </div>
+        )}
         {lines && (
           <div className="lines">
             {lines.map((line) => {
               const circle =
                 targetStation &&
-                guessedLines.has(line) &&
+                guessedLines?.has(line) &&
                 !targetStation.lines.includes(line)
                   ? wrongCircleMap[`circle${line}Wrong`]
                   : circleMap[`circle${line}`];
               return (
                 <img
                   className="circle"
+                  data-testid="circle"
                   key={line}
                   src={circle}
                   alt={`Línea ${line} ${
-                    !targetStation?.lines.includes(line) ? "incorecta " : ""
+                    !targetStation?.lines.includes(line)
+                      ? "incorecta "
+                      : "corecta"
                   }`}
                 />
               );
@@ -168,13 +184,17 @@ export const Guess = ({
 
       {guessed && stopsAway !== 0 && (
         <div className="right">
-          <div className="stops-away">
+          <div className="stops-away" data-testid="stops-away">
             {howToPlay ? "1" : stopsAway}{" "}
             {howToPlay ? "parada" : stopsAway === 1 ? "parada" : "paradas"}
           </div>
           {arrow !== "correct" && (
             <div className="direction">
-              <img src={arrow} alt={translateAlt(direction)} />
+              <img
+                data-testid="direction-arrow"
+                src={arrow}
+                alt={translateAlt(direction)}
+              />
             </div>
           )}
         </div>

@@ -1,4 +1,5 @@
 import TargetStation from "../models/targetStation.js";
+import Station from "../models/station.js";
 
 async function getTargetStation(req, res) {
   try {
@@ -9,8 +10,18 @@ async function getTargetStation(req, res) {
   }
 }
 
+async function getAllStations(req, res) {
+  try {
+    const stations = await Station.find({})
+    res.status(200).json({ stations: stations });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 const StationsController = {
-  getTargetStation: getTargetStation
+  getTargetStation: getTargetStation,
+  getAllStations: getAllStations
 };
 
 export default StationsController;

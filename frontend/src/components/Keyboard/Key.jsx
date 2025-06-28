@@ -15,6 +15,7 @@ export const Key = ({ letter, setSearch, search, filteredStations, normalize }) 
     <button
       onClick={() => setSearch(search + letter)}
       className={`key ${next ? "" : "not-next"}`}
+      data-testid={`key${next ? "" : "-not-next"}`}
     >
       {letter}
     </button>

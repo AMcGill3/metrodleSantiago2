@@ -54,16 +54,16 @@
   margin-top: 3px;
 }
 
-.station-name {
+.guess-station-name {
   font-weight: bold;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .lines {
   display: flex;
   align-items: center;
   gap: 5px;
-  height: 15px;
+  height: 14px;
 }
 
 .circle {

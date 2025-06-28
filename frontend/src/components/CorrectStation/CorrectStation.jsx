@@ -1,6 +1,6 @@
-import "./CorrectGuess.css"
+import "./CorrectStation.css"
 
-export const CorrectGuess = ({
+export const CorrectStation = ({
   targetStation
 }) => {
   return (

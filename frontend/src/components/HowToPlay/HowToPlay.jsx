@@ -54,7 +54,7 @@ export const HowToPlay = ({
             position: "absolute",
             width: "1705px",
             height: "1705px",
-            left: "-855px", // Have to minus 100 from this and top to make centered
+            left: "-855px",
             top: "-446px",
           }}
         />

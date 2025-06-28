@@ -16,12 +16,13 @@ export const Keyboard = ({
   showMenu,
   today,
   user,
+  guessedStationNames
 }) => {
   const row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
   const row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"];
   const row3 = ["Z", "X", "C", "V", "B", "N", "M"];
 
-  const guessProtocol = () => {
+  const handleGuess = () => {
     const guess = filteredStations[0];
     makeGuess(user?.username, guess);
     setGuesses((prevGuesses) => {
@@ -47,8 +48,8 @@ export const Keyboard = ({
         if (e.key === "Backspace" || e.key === "Delete") {
           setSearch(search.substring(0, search.length - 1));
         }
-        if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1) {
-          guessProtocol();
+        if (e.key === "Enter" && !e.shiftKey && filteredStations.length === 1 && !guessedStationNames.includes(normalize(filteredStations[0].name))) {
+          handleGuess();
         }
       }
     };
@@ -91,9 +92,12 @@ export const Keyboard = ({
           className={`non-letter-button ${
             filteredStations.length === 1 ? "clickable" : ""
           }`}
+          data-testid={`non-letter-button${
+            filteredStations.length === 1 ? "-clickable" : ""
+          }`}
           onClick={() => {
-            if (filteredStations.length === 1) {
-              guessProtocol();
+            if (filteredStations.length === 1 && filteredStations.length === 1 && !guessedStationNames.includes(normalize(filteredStations[0].name))) {
+              handleGuess();
             }
           }}
         >
@@ -113,9 +117,16 @@ export const Keyboard = ({
           className={`non-letter-button ${
             search.length > 0 ? "clickable" : ""
           }`}
+          data-testid={`non-letter-button${
+            filteredStations.length === 1 ? "-clickable" : ""
+          }`}
           onClick={() => setSearch(search.substring(0, search.length - 1))}
         >
-          <img className="delete-symbol" src={deleteSymbol}></img>
+          <img
+            className="delete-symbol"
+            data-testid="delete-symbol"
+            src={deleteSymbol}
+          ></img>
         </button>
       </div>
     </div>

@@ -246,9 +246,11 @@ describe("/users", () => {
           expect(updatedUser.maxStreak).toBe(1);
         });
         test("streak resets to 1 if lastPlayed was more than 1 day ago and max streak unchanged", async () => {
-          const threeDaysAgo = new Date();
-          threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-          threeDaysAgo.setHours(0, 0, 0, 0);
+          const threeDaysAgo = DateTime.now()
+            .setZone("America/Santiago")
+            .minus({ days: 3 })
+            .startOf("day")
+            .toJSDate();
 
           user.lastPlayed = threeDaysAgo;
           user.streak = 5;

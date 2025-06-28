@@ -20,6 +20,7 @@ export const FullMap = ({
             <div
               key={guessIndex}
               className="guess-animations"
+              data-testid="guess-animations"
               style={{
                 left: guess.coordinates[0] - 50,
                 top: guess.coordinates[1] - 50,
@@ -29,6 +30,7 @@ export const FullMap = ({
         })}
         {!checkWin() && (<div
           className="target-animation-fail"
+          data-testid="target-animation-fail"
           style={{
             left: targetStation.coordinates[0] - 50,
             top: targetStation.coordinates[1] - 50,

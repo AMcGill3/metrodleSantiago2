@@ -12,6 +12,7 @@ export const StationContainer = ({
   guessedStationNames,
   normalize,
   stations,
+  setSearch,
 }) => {
   useEffect(() => {
     if (search.trim() !== "") {
@@ -33,7 +34,7 @@ export const StationContainer = ({
   }, [search, stations]);
 
   return (
-    <div className="station-container">
+    <>
       {search.length > 0 && filteredStations.length === 0 ? (
         <div className="no-results">
           <span className="no-results-text">{search.toUpperCase()}</span>
@@ -47,17 +48,27 @@ export const StationContainer = ({
             ? normalizedSearch.length
             : 0;
 
-          const start = station.name.toUpperCase().replace(/\s+/g, "").slice(0, matchLength);
-          const rest = station.name.toUpperCase().replace(/\s+/g, "").slice(matchLength);
+          const start = station.name
+            .toUpperCase()
+            .replace(/\s+/g, "")
+            .slice(0, matchLength);
+          const rest = station.name
+            .toUpperCase()
+            .replace(/\s+/g, "")
+            .slice(matchLength);
 
           return (
             <div
               className={`station ${isGuessed ? "guessed" : ""}`}
+              data-testid={`station${isGuessed ? "-guessed" : ""}`}
               key={index}
-              onClick={() => setFilteredStations([station])}
+              onClick={() => {
+                setFilteredStations([station]);
+                setSearch(station.name);
+              }}
             >
               <div className="station-name">
-                <span className="highlight">
+                <span className="highlight" data-testid="highlight">
                   {start}
                 </span>
                 {rest}
@@ -69,13 +80,13 @@ export const StationContainer = ({
                     !targetStation.lines.includes(line)
                       ? wrongCircleMap[`circle${line}Wrong`]
                       : circleMap[`circle${line}`];
-                  return <img key={line} src={circle} alt={`Line ${line}`} />;
+                  return <img key={line} src={circle} alt={`Línea ${line}`} />;
                 })}
               </div>
             </div>
           );
         })
       )}
-    </div>
+    </>
   );
 };

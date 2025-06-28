@@ -9,6 +9,8 @@ import themeSymbol from "../../assets/menuSymbols/themeSymbol.svg";
 import themeSymbolDark from "../../assets/menuSymbols/themeSymbolDark.svg";
 import statisticsSymbol from "../../assets/menuSymbols/statisticsSymbol.svg";
 import statisticsSymbolDark from "../../assets/menuSymbols/statisticsSymbolDark.svg";
+import emailSymbol from "../../assets/menuSymbols/emailSymbol.svg"
+import emailSymbolDark from "../../assets/menuSymbols/emailSymbolDark.svg"
 
 export const Menu = ({
   toggleMenu,
@@ -28,6 +30,12 @@ export const Menu = ({
 
   const statistics =
     theme === "light" ? statisticsSymbol : statisticsSymbolDark;
+
+  const email = theme === "light" ? emailSymbol : emailSymbolDark;
+
+  const handleEmail = () => {
+    window.location.href = "mailto:alecmcgill5@gmail.com";
+  }
 
   return (
     <div className="menu">
@@ -49,6 +57,10 @@ export const Menu = ({
       <div className="menu-item" onClick={toggleAbout}>
         <img className="menuSymbol" src={about}></img>
         <h4>Sobre</h4>
+      </div>
+      <div className="menu-item" onClick={handleEmail}>
+        <img className="menuSymbol" src={email}></img>
+        <h4>Correo</h4>
       </div>
     </div>
   );

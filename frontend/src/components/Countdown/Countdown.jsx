@@ -1,5 +1,5 @@
 import "./Countdown.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { DateTime } from "luxon";
 
 export const Countdown = ({
@@ -12,23 +12,19 @@ export const Countdown = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState("");
 
-  const calculateTotalJourney = () => {
-    if (compareLastPlayed) {
-      let totalJourney = 0;
-      for (let i = 0; i < guesses?.length - 1; i++) {
-        const diff = bfsDistance(
-          graph,
-          nameToId[guesses[i].name],
-          nameToId[guesses[i + 1].name]
-        );
-        totalJourney += diff;
-      }
-
-      return totalJourney > 1 ? totalJourney : 1;
-    } else {
-      return;
+  const totalJourney = useMemo(() => {
+    if (!compareLastPlayed || !guesses) return;
+    let total = 0;
+    for (let i = 0; i < guesses.length - 1; i++) {
+      const diff = bfsDistance(
+        graph,
+        nameToId[guesses[i].name],
+        nameToId[guesses[i + 1].name]
+      );
+      total += diff;
     }
-  };
+    return total > 1 ? total : 1;
+  }, [guesses, compareLastPlayed, graph, nameToId]);
 
   useEffect(() => {
     const tomorrow = DateTime.now()
@@ -60,11 +56,11 @@ export const Countdown = ({
     <>
       <div className="left-countdown">
         <p>Viaje Total</p>
-        <p>{calculateTotalJourney()}</p>
+        <p data-testid="total-journey">{totalJourney}</p>
       </div>
       <div className="right-countdown">
         <p>El Próximo Metrodle llegará en</p>
-        <p>{timeLeft}</p>
+        <p data-testid="time">{timeLeft}</p>
       </div>
     </>
   );

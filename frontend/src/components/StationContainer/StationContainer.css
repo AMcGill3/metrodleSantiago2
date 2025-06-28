@@ -1,4 +1,4 @@
-.station-container {
+.stations-container {
   background-color: var(--guess-card-not-guessed-bg);
   color: var(--text-colour-bg);
   display: flex;
@@ -6,7 +6,7 @@
   flex: 1;
   flex-direction: column;
   position: fixed;
-  bottom: 217px;
+  bottom: 168px;
   margin: 0 auto;
   left: 2px;
   right: 2px;
@@ -27,28 +27,27 @@
 }
 
 .station {
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 5px;
-  justify-content: space-between;
   position: relative;
+  min-height: 23px;
+}
+
+.station-name {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 120px;
+  text-align: left;
+  font-size: inherit;
 }
 
 .station-circles {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 300px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   gap: 6px;
   height: 17px;
-  width: 40px;
-  margin-top: 5px;
-}
-
-.station-name {
-  flex: 0 0 auto;
-  text-align: left;
-  min-width: 100px;
 }
 
 .highlight {
@@ -58,29 +57,24 @@
 .no-results-text {
   background-color: #cc8080;
   border-radius: 2px;
+  font-size: inherit;
 }
 
 @media (max-width: 600px) {
-  .station-container {
+  .stations-container {
     bottom: 168px;
     max-height: 45vh;
   }
 }
 
-@media (min-height: 700px) {
-  .station-container {
-    bottom: 217px;
-  }
-}
-
 @media (min-width: 600px) and (max-height: 600px) {
-  .station-container {
+  .stations-container {
     bottom: 168px;
   }
 }
 
 @media (max-height: 600px) and (orientation: landscape) {
-  .station-container {
-    bottom: 130px;
+  .stations-container {
+    bottom: 127px;
   }
 }

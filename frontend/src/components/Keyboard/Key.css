@@ -49,10 +49,10 @@
 
 @media (min-height: 700px) {
   .key {
-    height: 70px;
+    height: 54px;
   }
   .non-letter-button {
-    height: 70px;
+    height: 54px;
   }
 }
 
@@ -70,7 +70,7 @@
   .key {
     height: 40px;
   }
-    .non-letter-button {
+  .non-letter-button {
     height: 40px;
     font-size: 6px;
     width: 50px;
