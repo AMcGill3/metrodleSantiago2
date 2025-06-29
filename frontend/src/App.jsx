@@ -96,6 +96,7 @@ function App() {
     async function fetchStations() {
       try {
         const res = await getAllStations();
+        console.log('response:', res);
         if (res?.stations) {
           setStations(res.stations);
         }

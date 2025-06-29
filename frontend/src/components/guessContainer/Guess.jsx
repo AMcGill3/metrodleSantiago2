@@ -1,4 +1,4 @@
-import "./Guess.css";
+import "./guess.css";
 import circleMap from "../../utils/loadLineCircleSVGs";
 import wrongCircleMap from "../../utils/loadWrongLineCirclesSVGs.js";
 import arrowMap from "../../utils/loadArrowSVGs";
