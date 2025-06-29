@@ -96,7 +96,6 @@ function App() {
     async function fetchStations() {
       try {
         const res = await getAllStations();
-        console.log('response:', res);
         if (res?.stations) {
           setStations(res.stations);
         }
@@ -214,30 +213,6 @@ function App() {
   // end game logic
   useEffect(() => {
     if (!targetStation) return;
-
-    const handleGameEnd = async () => {
-      let updatedUser;
-
-      if (checkWin() && !compareLastPlayed) {
-        updatedUser = await updateUser(
-          user?.username,
-          true,
-          today,
-          guessedStationNames.length
-        );
-      } else if (
-        guessedStationNames.length === 6 &&
-        !checkWin() &&
-        !compareLastPlayed
-      ) {
-        updatedUser = await updateUser(user?.username, false, today);
-      }
-
-      if (updatedUser) {
-        setUser(updatedUser);
-      }
-    };
-
     if (
       !compareLastPlayed &&
       (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
@@ -246,16 +221,20 @@ function App() {
       setTimeout(async () => {
         setLastPlayed(today);
         setCorrectStationPopUp(false);
+        const updatedUser = await getUser(user.username);
+        setUser(updatedUser);
         setShowStats(true);
       }, 4000);
-    } else if (checkWin() && !compareLastPlayed) {
-      handleGameEnd();
+    }
+
+    if (checkWin() && !compareLastPlayed) {
+      updateUser(user?.username, true, today, guessedStationNames.length);
     } else if (
       guessedStationNames.length === 6 &&
       !checkWin() &&
       !compareLastPlayed
     ) {
-      handleGameEnd();
+      updateUser(user?.username, false, today);
     }
   }, [guessedStationNames]);
 
