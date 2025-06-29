@@ -6,7 +6,7 @@
   height: 46px;
   border-radius: 6px;
   padding: 0 4px;
-  max-width: 95vw;
+  max-width: 95%;
   margin: 0 auto 2px auto;
   box-sizing: border-box;
 }
@@ -31,8 +31,7 @@
   height: 46px;
   border-radius: 6px;
   margin: 0 auto 2px auto;
-  justify-content: center;
-  max-width: 95vw;
+  max-width: 95%;
 }
 
 .correct-guess-extra-message {
@@ -84,6 +83,11 @@
 .direction img {
   height: 13px;
 }
+.left,
+.right {
+  flex-shrink: 1;
+  min-width: 0;
+}
 
 @media (max-width: 600px) {
   .guess-card {
@@ -131,7 +135,7 @@
 }
 
 @media (max-height: 400px) and (orientation: landscape) {
-  .guess-card  {
+  .guess-card {
     height: 20px;
   }
 
@@ -150,7 +154,7 @@
   }
 
   .lines {
-    height: 13px; 
+    height: 13px;
   }
 }
 
