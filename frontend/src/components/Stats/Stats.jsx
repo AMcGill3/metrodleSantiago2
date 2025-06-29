@@ -64,7 +64,7 @@ export const Stats = ({
       result += "🛑 X/6";
     }
 
-    result += "\n metrodle Santiago https://metrodle-santiago.com";
+    result += "\n Metrodle Santiago \n https://metrodle-santiago.com";
 
     return result;
   };
