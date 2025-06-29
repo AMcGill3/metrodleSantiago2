@@ -74,7 +74,9 @@ export const Stats = ({
   return (
     <>
       <div className="top">
-        <div data-testid="puzzle-number">Metrodle Santiago # {puzzleNumber}</div>
+        <div data-testid="puzzle-number">
+          Metrodle Santiago # {puzzleNumber}
+        </div>
         <button className="exit-stats-button" onClick={toggleStats}>
           <img src={exit} className="exit-menu-img"></img>
         </button>
@@ -143,18 +145,21 @@ export const Stats = ({
             className="share"
             onClick={() => {
               const results = shareResults();
+
               if (navigator.share) {
-                navigator.share({ results });
+                navigator
+                  .share({ text: results })
+                  .catch((error) => console.error("Sharing failed", error));
               } else {
-                results.select();
-                results.setSelectionRange(0, 99999);
-                navigator.clipboard.writeText(results.valueOf());
-                alert("Results copied to clipboard");
+                navigator.clipboard
+                  .writeText(results)
+                  .then(() => alert("Results copied to clipboard"))
+                  .catch((err) => console.error("Clipboard write failed", err));
               }
             }}
           >
             Compartir
-            <img src={shareSymbol} className="share-symbol"></img>
+            <img src={shareSymbol} className="share-symbol" />
           </button>
         </div>
       </div>
