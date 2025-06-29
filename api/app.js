@@ -10,8 +10,21 @@ const app = express(); // ✅ Declare first, then export
 // Allow requests from any client
 // docs: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 // docs: https://expressjs.com/en/resources/middleware/cors.html
+const allowedOrigins = [
+  process.env.FRONTEND_URL,        // deployed frontend URL
+  "http://localhost:5173",         // Vite dev server
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., curl, mobile)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 
