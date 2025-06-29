@@ -25,7 +25,7 @@ export const About = ({ toggleAbout, theme }) => {
         ciudad de Santiago.
         <br></br>
         <br></br>
-        Gracias a mi amigo Sebastian Ávila por su amistad y apoyo, a los
+        Gracias a mis amigxs Sebastian Ávila, Jack Misner, y Emilia Bland por su amistad y apoyo, a los
         creadores del juego original por darme su permiso para hacer este juego,
         y todas las personas que me han apoyado durante el proceso.
       </p>
