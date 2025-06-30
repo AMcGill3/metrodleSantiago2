@@ -161,7 +161,7 @@ function App() {
       if (!username) {
         try {
           username = await createUser();
-          document.cookie = `userId=${username}; path=/;`;
+          document.cookie = `userId=${username}; path=/; max-age=315360000;`
           console.log("cookie set", document.cookie);
           setShowHowToPlay(true);
         } catch (err) {
