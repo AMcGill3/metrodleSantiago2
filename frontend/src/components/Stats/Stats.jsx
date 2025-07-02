@@ -146,11 +146,11 @@ export const Stats = ({
             onClick={() => {
               const results = shareResults();
 
-              if (navigator.share) {
+              if (navigator.share && compareLastPlayed) {
                 navigator
                   .share({ text: results })
                   .catch((error) => console.error("Sharing failed", error));
-              } else {
+              } else if (compareLastPlayed) {
                 navigator.clipboard
                   .writeText(results)
                   .then(() => alert("Results copied to clipboard"))
