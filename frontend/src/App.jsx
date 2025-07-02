@@ -9,7 +9,7 @@ import { Stats } from "./components/Stats/Stats";
 import { StationContainer } from "./components/StationContainer/StationContainer";
 import { CorrectStation } from "./components/CorrectStation/CorrectStation.jsx";
 import map from "../src/assets/metroMapBackground.svg";
-import lineMap from "./utils/loadLinesSVGs";
+import lineMap from "./utils/loadLinesPngs.js";
 import stationMap from "./utils/loadStationSvgs";
 import nationalRailStations from "../src/assets/NationalRailStations.svg";
 import { useState, useEffect, useMemo } from "react";
@@ -161,7 +161,7 @@ function App() {
       if (!username) {
         try {
           username = await createUser();
-          document.cookie = `userId=${username}; path=/; max-age=315360000;`
+          document.cookie = `userId=${username}; path=/; max-age=315360000;`;
           console.log("cookie set", document.cookie);
           setShowHowToPlay(true);
         } catch (err) {

@@ -2,7 +2,7 @@ import "./HowToPlay.css";
 import exitMenu from "../../assets/exitMenu.png";
 import exitMenuDark from "../../assets/exitMenuDark.svg";
 import map from "../../assets/metroMapBackground.svg";
-import lineMap from "../../utils/loadLinesSVGs";
+import lineMap from "../../utils/loadLinesPngs";
 import stationMap from "../../utils/loadStationSvgs";
 import { Guess } from "../guessContainer/Guess";
 import logo from "../../assets/pageLogo.svg";
@@ -124,7 +124,7 @@ export const HowToPlay = ({
           if (name === "santalucía") {
             return (
               <img
-              className="station-labels"
+                className="station-labels"
                 key={name}
                 src={src}
                 alt={name}
