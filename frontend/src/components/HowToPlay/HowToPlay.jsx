@@ -152,6 +152,7 @@ export const HowToPlay = ({
         graph={graph}
         nameToId={nameToId}
         stopsFromTarget={stopsFromTarget}
+        theme={theme}
         howToPlay={true}
       ></Guess>
     </div>

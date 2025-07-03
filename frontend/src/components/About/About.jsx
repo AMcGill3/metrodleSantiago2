@@ -21,7 +21,7 @@ export const About = ({ toggleAbout, theme }) => {
       </div>
       <p>
         Este juego fue inspirada por el juego{" "}
-        <a href="https://metrodle.com">Metrodle</a> y el tiempo que viví en la
+        <a href="https://metrodle.com" target="_blank" rel="noreferrer">Metrodle</a> y el tiempo que viví en la
         ciudad de Santiago.
         <br></br>
         <br></br>
