@@ -8,5 +8,6 @@
 @media (max-width: 600px) {
   .guess-container {
     max-width: 100%;
+    width: 100vw;
   }
 }
