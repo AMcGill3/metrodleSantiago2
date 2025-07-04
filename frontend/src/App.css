@@ -3,7 +3,7 @@
 }
 body {
   margin: 0;
-  padding: var(--main-padding);
+  padding: 2rem 0 0 0;
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
