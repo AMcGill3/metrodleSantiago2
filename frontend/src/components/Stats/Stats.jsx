@@ -38,7 +38,7 @@ export const Stats = ({
 
     const gotIt = gameGuesses[totalGuesses - 1]?.name === targetStation.name;
 
-    if (gotIt && totalGuesses !== 1) {
+    if (totalGuesses !== 1) {
       gameGuesses.forEach((guess, i) => {
         const hasCorrectLine = guess.lines.some((line) =>
           targetStation.lines.includes(line)
