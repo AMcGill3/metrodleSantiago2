@@ -279,217 +279,159 @@ function App() {
     setShowFullMap((prev) => !prev);
   };
 
-  if (loading) {
-    const t = DateTime.now().setZone("America/Santiago");
-    const hour = t.hour;
-    return (
-      <div className="loading-screen">
-        {hour < 12 && (
-          <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>
-        )}
-        {hour < 18 && hour >= 12 && (
-          <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>
-        )}
-        {hour >= 18 && hour < 24 && (
-          <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>
-        )}
-      </div>
-    );
-  }
+  const t = DateTime.now().setZone("America/Santiago");
+  const hour = t.hour;
 
   return (
     <>
-      <div
-        className={`stats-container ${showStats ? "open" : "closed"}`}
-        data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
-      >
-        <Stats
-          toggleStats={toggleStats}
-          theme={theme}
-          user={user}
-          today={today}
-          targetStation={targetStation}
-          lastPlayed={lastPlayed}
-          compareLastPlayed={compareLastPlayed}
-          stopsFromTarget={stopsFromTarget}
-          checkWin={checkWin}
-          puzzleNumber={puzzleNumber}
-        ></Stats>
-      </div>
-      <div
-        className={`how-to-play-container ${showHowToPlay ? "open" : "closed"}`}
-      >
-        <HowToPlay
-          toggleHowToPlay={toggleHowToPlay}
-          stations={stations}
-          theme={theme}
-          graph={graph}
-          nameToId={nameToId}
-          stopsFromTarget={stopsFromTarget}
-        ></HowToPlay>
-      </div>
-      <div className={`about-container ${showAbout ? "open" : "closed"}`}>
-        <About toggleAbout={toggleAbout} theme={theme}></About>
-      </div>
-      <div
-        className={`theme-panel-container ${
-          showThemePanel ? "open" : "closed"
-        }`}
-      >
-        <Theme
-          toggleThemePanel={toggleThemePanel}
-          theme={theme}
-          setTheme={setTheme}
-        ></Theme>
-      </div>
-      <div className={`menu-container ${showMenu ? "open" : "closed"}`}>
-        <Menu
-          toggleMenu={toggleMenu}
-          toggleHowToPlay={toggleHowToPlay}
-          toggleAbout={toggleAbout}
-          toggleThemePanel={toggleThemePanel}
-          toggleStats={toggleStats}
-          theme={theme}
-        ></Menu>
-      </div>
-      {showFullMap && (
-        <div className="full-map-container">
-          <FullMap
-            toggleFullMap={toggleFullMap}
-            guesses={guesses}
-            targetStation={targetStation}
-            checkWin={checkWin}
-          ></FullMap>
+      {loading && (
+        <div className="loading-screen">
+          {hour < 12 && (
+            <img src={loadingSymbolMorning} alt={"Buenos dias"}></img>
+          )}
+          {hour < 18 && hour >= 12 && (
+            <img src={loadingSymbolAfternoon} alt={"Buenas tardes"}></img>
+          )}
+          {hour >= 18 && hour < 24 && (
+            <img src={loadingSymbolEvening} alt={"Buenas noches"}></img>
+          )}
         </div>
       )}
-      {(showMenu ||
-        showHowToPlay ||
-        showAbout ||
-        showThemePanel ||
-        correctStationPopUp ||
-        showStats) && <div className="backdrop"></div>}
-      <div className="main-area-container">
-        {compareLastPlayed && (
-          <button
-            className="full-map-button"
-            data-testid="full-map-button"
-            onClick={toggleFullMap}
-          >
-            <img
-              className="full-map-button-img"
-              src={theme === "light" ? fullMapButton : fullMapButtonDark}
-              alt={"mapa completa"}
-            ></img>
-          </button>
-        )}
-        <div className="game-area">
-          {!showMenu && (
-            <button className="hamburger-button" onClick={toggleMenu}>
-              <svg
-                className={`svgIcon ${theme === "dark" ? "dark" : "light"}`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 40 40"
-              >
-                <g id="a"></g>
-                <g id="b">
-                  <g id="c">
-                    <path d="M35,0H2C.9,0,0,.9,0,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
-                    <path d="M35,11.17H2c-1.1,0-2,.9-2,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
-                    <path d="M35,22.33H2c-1.1,0-2,.9-2,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
-                  </g>
-                </g>
-              </svg>
-            </button>
+      {!loading && (
+        <>
+          {(!compareLastPlayed || showStats) && (
+            <div
+              className={`stats-container ${showStats ? "open" : "closed"}`}
+              data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
+            >
+              <Stats
+                toggleStats={toggleStats}
+                theme={theme}
+                user={user}
+                today={today}
+                targetStation={targetStation}
+                lastPlayed={lastPlayed}
+                compareLastPlayed={compareLastPlayed}
+                stopsFromTarget={stopsFromTarget}
+                checkWin={checkWin}
+                puzzleNumber={puzzleNumber}
+              ></Stats>
+            </div>
           )}
-          <div className="map-container">
-            {targetStation && (
-              <div
-                className="map-centre-animation"
-                style={{
-                  left: `${
-                    tooClose(targetX)
-                      ? targetX - 50
-                      : tooFar(targetX)
-                      ? targetX - 1505 - 50
-                      : 50
-                  }px`,
-                  top: `${
-                    tooClose(targetY)
-                      ? targetY - 50
-                      : tooFar(targetY)
-                      ? targetY - 1505 - 50
-                      : 50
-                  }px`,
-                }}
-              ></div>
-            )}
-
-            <img
-              className="map"
-              src={map}
-              alt="Mapa del metro"
-              style={{
-                position: "absolute",
-                width: "1705px",
-                height: "1705px",
-                left: targetStation ? `${mapX}px` : "0px",
-                top: targetStation ? `${mapY}px` : "0px",
-              }}
-            />
-            {Object.entries(lineMap).map(([name, src]) => {
-              if (!guessedLines.has(name) && !compareLastPlayed) {
-                return (
-                  <img
-                    className="line-blockers"
-                    key={name}
-                    src={src}
-                    alt={"bloqueador de línea"}
-                    style={{
-                      position: "absolute",
-                      width: "1705px",
-                      height: "1705px",
-                      left: targetStation ? `${mapX}px` : "0px",
-                      top: targetStation ? `${mapY}px` : "0px",
-                    }}
-                  ></img>
-                );
-              }
-            })}
-            {Object.entries(stationMap).map(([name, src]) => {
-              const guessCoordinates = getStationCoordinates(name);
-              const close =
-                guessCoordinates &&
-                targetStation &&
-                Math.abs(targetStation.coordinates[0] - guessCoordinates[0]) <=
-                  150 &&
-                Math.abs(targetStation.coordinates[1] - guessCoordinates[1]) <=
-                  150;
-              if (
-                close &&
-                (compareLastPlayed ||
-                  guessedStationNames.includes(normalize(name)))
-              ) {
-                return (
-                  <img
-                    className="station-labels"
-                    key={name}
-                    src={src}
-                    alt={name}
-                    style={{
-                      position: "absolute",
-                      width: "1705px",
-                      height: "1705px",
-                      left: targetStation ? `${mapX}px` : "0px",
-                      top: targetStation ? `${mapY}px` : "0px",
-                    }}
-                  ></img>
-                );
-              }
-            })}
+          <div
+            className={`how-to-play-container ${
+              showHowToPlay ? "open" : "closed"
+            }`}
+          >
+            <HowToPlay
+              toggleHowToPlay={toggleHowToPlay}
+              stations={stations}
+              theme={theme}
+              graph={graph}
+              nameToId={nameToId}
+              stopsFromTarget={stopsFromTarget}
+            ></HowToPlay>
+          </div>
+          <div className={`about-container ${showAbout ? "open" : "closed"}`}>
+            <About toggleAbout={toggleAbout} theme={theme}></About>
+          </div>
+          <div
+            className={`theme-panel-container ${
+              showThemePanel ? "open" : "closed"
+            }`}
+          >
+            <Theme
+              toggleThemePanel={toggleThemePanel}
+              theme={theme}
+              setTheme={setTheme}
+            ></Theme>
+          </div>
+          <div className={`menu-container ${showMenu ? "open" : "closed"}`}>
+            <Menu
+              toggleMenu={toggleMenu}
+              toggleHowToPlay={toggleHowToPlay}
+              toggleAbout={toggleAbout}
+              toggleThemePanel={toggleThemePanel}
+              toggleStats={toggleStats}
+              theme={theme}
+            ></Menu>
+          </div>
+          {showFullMap && (
+            <div className="full-map-container">
+              <FullMap
+                toggleFullMap={toggleFullMap}
+                guesses={guesses}
+                targetStation={targetStation}
+                checkWin={checkWin}
+              ></FullMap>
+            </div>
+          )}
+          {(showMenu ||
+            showHowToPlay ||
+            showAbout ||
+            showThemePanel ||
+            correctStationPopUp ||
+            showStats) && <div className="backdrop"></div>}
+          <div className="main-area-container">
             {compareLastPlayed && (
-              <div className="national-rail-stations">
+              <button
+                className="full-map-button"
+                data-testid="full-map-button"
+                onClick={toggleFullMap}
+              >
                 <img
-                  src={nationalRailStations}
+                  className="full-map-button-img"
+                  src={theme === "light" ? fullMapButton : fullMapButtonDark}
+                  alt={"mapa completa"}
+                ></img>
+              </button>
+            )}
+            <div className="game-area">
+              {!showMenu && (
+                <button className="hamburger-button" onClick={toggleMenu}>
+                  <svg
+                    className={`svgIcon ${theme === "dark" ? "dark" : "light"}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40"
+                  >
+                    <g id="a"></g>
+                    <g id="b">
+                      <g id="c">
+                        <path d="M35,0H2C.9,0,0,.9,0,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
+                        <path d="M35,11.17H2c-1.1,0-2,.9-2,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
+                        <path d="M35,22.33H2c-1.1,0-2,.9-2,2v.67c0,1.1,.9,2,2,2H35c1.1,0,2-.9,2-2v-.67c0-1.1-.9-2-2-2h0Z"></path>
+                      </g>
+                    </g>
+                  </svg>
+                </button>
+              )}
+              <div className="map-container">
+                {targetStation && (
+                  <div
+                    className="map-centre-animation"
+                    style={{
+                      left: `${
+                        tooClose(targetX)
+                          ? targetX - 50
+                          : tooFar(targetX)
+                          ? targetX - 1505 - 50
+                          : 50
+                      }px`,
+                      top: `${
+                        tooClose(targetY)
+                          ? targetY - 50
+                          : tooFar(targetY)
+                          ? targetY - 1505 - 50
+                          : 50
+                      }px`,
+                    }}
+                  ></div>
+                )}
+
+                <img
+                  className="map"
+                  src={map}
+                  alt="Mapa del metro"
                   style={{
                     position: "absolute",
                     width: "1705px",
@@ -497,76 +439,145 @@ function App() {
                     left: targetStation ? `${mapX}px` : "0px",
                     top: targetStation ? `${mapY}px` : "0px",
                   }}
-                  alt={"Estaciones nacionales"}
-                ></img>
+                />
+                {Object.entries(lineMap).map(([name, src]) => {
+                  if (!guessedLines.has(name) && !compareLastPlayed) {
+                    return (
+                      <img
+                        className="line-blockers"
+                        key={name}
+                        src={src}
+                        alt={"bloqueador de línea"}
+                        style={{
+                          position: "absolute",
+                          width: "1705px",
+                          height: "1705px",
+                          left: targetStation ? `${mapX}px` : "0px",
+                          top: targetStation ? `${mapY}px` : "0px",
+                        }}
+                      ></img>
+                    );
+                  }
+                })}
+                {Object.entries(stationMap).map(([name, src]) => {
+                  const guessCoordinates = getStationCoordinates(name);
+                  const close =
+                    guessCoordinates &&
+                    targetStation &&
+                    Math.abs(
+                      targetStation.coordinates[0] - guessCoordinates[0]
+                    ) <= 150 &&
+                    Math.abs(
+                      targetStation.coordinates[1] - guessCoordinates[1]
+                    ) <= 150;
+                  if (
+                    close &&
+                    (compareLastPlayed ||
+                      guessedStationNames.includes(normalize(name)))
+                  ) {
+                    return (
+                      <img
+                        className="station-labels"
+                        key={name}
+                        src={src}
+                        alt={name}
+                        style={{
+                          position: "absolute",
+                          width: "1705px",
+                          height: "1705px",
+                          left: targetStation ? `${mapX}px` : "0px",
+                          top: targetStation ? `${mapY}px` : "0px",
+                        }}
+                      ></img>
+                    );
+                  }
+                })}
+                {compareLastPlayed && (
+                  <div className="national-rail-stations">
+                    <img
+                      src={nationalRailStations}
+                      style={{
+                        position: "absolute",
+                        width: "1705px",
+                        height: "1705px",
+                        left: targetStation ? `${mapX}px` : "0px",
+                        top: targetStation ? `${mapY}px` : "0px",
+                      }}
+                      alt={"Estaciones nacionales"}
+                    ></img>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div
+              className={`correct-guess-container ${
+                correctStationPopUp ? "open" : "closed"
+              }`}
+            >
+              <CorrectStation targetStation={targetStation}></CorrectStation>
+            </div>
+
+            <>
+              <GuessContainer
+                guesses={guesses}
+                targetStation={targetStation}
+                guessedLines={guessedLines}
+                nameToId={nameToId}
+                graph={graph}
+                stopsFromTarget={stopsFromTarget}
+                theme={theme}
+              ></GuessContainer>
+            </>
+            {search.length > 0 && (
+              <div className="stations-container">
+                <StationContainer
+                  search={search}
+                  setSearch={setSearch}
+                  stations={stations}
+                  setFilteredStations={setFilteredStations}
+                  filteredStations={filteredStations}
+                  guessedLines={guessedLines}
+                  targetStation={targetStation}
+                  guessedStationNames={guessedStationNames}
+                  normalize={normalize}
+                ></StationContainer>
               </div>
             )}
           </div>
-        </div>
-        <div
-          className={`correct-guess-container ${
-            correctStationPopUp ? "open" : "closed"
-          }`}
-        >
-          <CorrectStation targetStation={targetStation}></CorrectStation>
-        </div>
-
-        <>
-          <GuessContainer
-            guesses={guesses}
-            targetStation={targetStation}
-            guessedLines={guessedLines}
-            nameToId={nameToId}
-            graph={graph}
-            stopsFromTarget={stopsFromTarget}
-            theme={theme}
-          ></GuessContainer>
+          {(!compareLastPlayed || !lastPlayed) && (
+            <div
+              className="keyboard-container"
+              data-testid="keyboard-container"
+            >
+              <Keyboard
+                search={search}
+                setSearch={setSearch}
+                filteredStations={filteredStations}
+                setFilteredStations={setFilteredStations}
+                setGuesses={setGuesses}
+                setGuessedLines={setGuessedLines}
+                setGuessedStationNames={setGuessedStationNames}
+                normalize={normalize}
+                showMenu={showMenu}
+                today={today}
+                user={user}
+                guessedStationNames={guessedStationNames}
+              ></Keyboard>
+            </div>
+          )}
+          {compareLastPlayed && (
+            <div className="countdown-container" data-testid="countdown">
+              <Countdown
+                today={today}
+                bfsDistance={bfsDistance}
+                nameToId={nameToId}
+                graph={graph}
+                guesses={guesses}
+                compareLastPlayed={compareLastPlayed}
+              ></Countdown>
+            </div>
+          )}
         </>
-        {search.length > 0 && (
-          <div className="stations-container">
-            <StationContainer
-              search={search}
-              setSearch={setSearch}
-              stations={stations}
-              setFilteredStations={setFilteredStations}
-              filteredStations={filteredStations}
-              guessedLines={guessedLines}
-              targetStation={targetStation}
-              guessedStationNames={guessedStationNames}
-              normalize={normalize}
-            ></StationContainer>
-          </div>
-        )}
-      </div>
-      {(!compareLastPlayed || !lastPlayed) && (
-        <div className="keyboard-container" data-testid="keyboard-container">
-          <Keyboard
-            search={search}
-            setSearch={setSearch}
-            filteredStations={filteredStations}
-            setFilteredStations={setFilteredStations}
-            setGuesses={setGuesses}
-            setGuessedLines={setGuessedLines}
-            setGuessedStationNames={setGuessedStationNames}
-            normalize={normalize}
-            showMenu={showMenu}
-            today={today}
-            user={user}
-            guessedStationNames={guessedStationNames}
-          ></Keyboard>
-        </div>
-      )}
-      {compareLastPlayed && (
-        <div className="countdown-container" data-testid="countdown">
-          <Countdown
-            today={today}
-            bfsDistance={bfsDistance}
-            nameToId={nameToId}
-            graph={graph}
-            guesses={guesses}
-            compareLastPlayed={compareLastPlayed}
-          ></Countdown>
-        </div>
       )}
     </>
   );
