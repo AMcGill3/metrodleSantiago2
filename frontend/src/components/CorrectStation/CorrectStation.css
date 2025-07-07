@@ -4,8 +4,8 @@
   color: var(--text-colour-bg);
   transition: top 0.2s ease, opacity 0.2s ease;
   border-radius: 10px;
-  border: 1px solid rgb(0, 0, 0);
-  line-height: 0.9;
+  border: 1px solid var(--text-colour-bg);
+  line-height: 1;
   padding: 20px 200px 32px 200px;
   position: fixed;
   top: 50%;
