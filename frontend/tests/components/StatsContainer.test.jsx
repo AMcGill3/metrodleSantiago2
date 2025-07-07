@@ -1,11 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as stationsService from "../../src/services/stations.js";
 import * as usersService from "../../src/services/users.js";
 import App from "../../src/App.jsx";
-import { StatsContainer } from "../../src/components/Stats/Stats.jsx";
 import { beforeEach, describe, vi } from "vitest";
-import { act } from "react-dom/test-utils";
 import { DateTime } from "luxon";
 
 vi.mock("../../src/services/stations.js");
@@ -102,6 +99,13 @@ describe("Stats container", () => {
         },
       ],
     });
+    window.Image = class {
+      constructor() {
+        setTimeout(() => {
+          this.onload();
+        }, 0);
+      }
+    };
   });
   it("Contains puzzle number", async () => {
     usersService.getUser.mockResolvedValueOnce({

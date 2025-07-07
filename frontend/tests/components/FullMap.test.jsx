@@ -132,6 +132,13 @@ describe("Full map component", () => {
     });
 
     usersService.createUser.mockResolvedValue("testUser");
+    window.Image = class {
+      constructor() {
+        setTimeout(() => {
+          this.onload();
+        }, 0);
+      }
+    };
   });
 
   it("Doesn't show the button to open the component when the game hasn't ended yet", async () => {

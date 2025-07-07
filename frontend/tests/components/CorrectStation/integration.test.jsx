@@ -79,6 +79,13 @@ describe("correct station pop up integration", () => {
     });
 
     usersService.createUser.mockResolvedValue("testUser");
+    window.Image = class {
+      constructor() {
+        setTimeout(() => {
+          this.onload();
+        }, 0);
+      }
+    };
   });
 
   it("shows and hides the CorrectStation popup when the user wins", async () => {

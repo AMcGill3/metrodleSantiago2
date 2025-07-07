@@ -117,8 +117,6 @@ function App() {
     preloadLineImages();
   }, []);
 
-
-
   useEffect(() => {
     async function fetchStations() {
       try {

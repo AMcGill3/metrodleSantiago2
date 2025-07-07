@@ -135,6 +135,13 @@ describe("Guess container", () => {
     });
 
     usersService.createUser.mockResolvedValue("testUser");
+    window.Image = class {
+      constructor() {
+        setTimeout(() => {
+          this.onload();
+        }, 0);
+      }
+    };
   });
 
   it("Contains six blank guesses upon render when no guesses have been made", async () => {
@@ -146,12 +153,22 @@ describe("Guess container", () => {
     });
   });
   it("Contains one filled in guess and five blank guesses upon render when one guess is made", async () => {
-    const mockGuesses = [{
-      name: "Universidad de Chile",
-      lines: ["1", "3"],
-      coordinates: [839.5, 548],
-    }];
-    render(<GuessContainer guesses={mockGuesses} guessedLines={ new Set(["1", "3"])} targetStation={targetStation} stopsFromTarget={() => 3} theme={"light"}/>);
+    const mockGuesses = [
+      {
+        name: "Universidad de Chile",
+        lines: ["1", "3"],
+        coordinates: [839.5, 548],
+      },
+    ];
+    render(
+      <GuessContainer
+        guesses={mockGuesses}
+        guessedLines={new Set(["1", "3"])}
+        targetStation={targetStation}
+        stopsFromTarget={() => 3}
+        theme={"light"}
+      />
+    );
     await waitFor(() => {
       const guesses = screen.getAllByTestId("guess-card-not-guessed");
       const madeGuess = screen.getAllByTestId("guess-card-guessed");

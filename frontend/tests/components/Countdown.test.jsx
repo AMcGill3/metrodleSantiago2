@@ -132,6 +132,13 @@ describe("countdown", () => {
     });
 
     usersService.createUser.mockResolvedValue("testUser");
+    window.Image = class {
+      constructor() {
+        setTimeout(() => {
+          this.onload();
+        }, 0);
+      }
+    };
   });
 
   it("doesn't appear when game hasn't ended yet", async () => {
