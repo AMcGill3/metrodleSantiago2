@@ -75,3 +75,9 @@
     font-size: 25px;
   }
 }
+
+@media (orientation: landscape) {
+  .exit-menu {
+    margin-bottom: 25px;
+  }
+}

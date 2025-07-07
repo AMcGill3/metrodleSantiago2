@@ -38,7 +38,7 @@ export const Menu = ({
   }
 
   return (
-    <div className="menu">
+    <>
       <button className="exit-menu" onClick={toggleMenu}>
         <img src={exit} className="exit-menu-img"></img>
       </button>
@@ -62,6 +62,6 @@ export const Menu = ({
         <img className="menuSymbol" src={email}></img>
         <h4>Correo</h4>
       </div>
-    </div>
+    </>
   );
 };
