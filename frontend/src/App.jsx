@@ -49,6 +49,7 @@ function App() {
   const [lastPlayed, setLastPlayed] = useState(null);
   const [showStats, setShowStats] = useState(false);
   const [user, setUser] = useState(null);
+  const [newUserCreated, setNewUserCreated] = useState(false);
   const [theme, setTheme] = useState(
     localStorage.getItem("theme")
       ? localStorage.getItem("theme")
@@ -114,7 +115,7 @@ function App() {
     }
   }, [graph, targetStation, stations, user]);
 
-  const compareLastPlayed = useMemo(() => {
+  const playedToday = useMemo(() => {
     if (!lastPlayed) return false;
     return lastPlayed.hasSame(today, "day");
   }, [lastPlayed, today]);
@@ -163,7 +164,7 @@ function App() {
           username = await createUser();
           document.cookie = `userId=${username}; path=/; max-age=315360000;`;
           console.log("cookie set", document.cookie);
-          setShowHowToPlay(true);
+          setNewUserCreated(true);
         } catch (err) {
           console.error("Failed to create user:", err);
           return;
@@ -189,10 +190,21 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loading && compareLastPlayed) {
-      setShowStats(true);
+    if (!loading && newUserCreated) {
+      setTimeout(() => {
+        setShowHowToPlay(true);
+        setNewUserCreated(false);
+      }, 100);
     }
-  }, [loading, compareLastPlayed]);
+  }, [loading, user, newUserCreated]);
+
+  useEffect(() => {
+    if (!loading && playedToday) {
+      setTimeout(() => {
+        setShowStats(true);
+      }, 100);
+    }
+  }, [loading, playedToday]);
 
   const stopsFromTarget = (stationName) => {
     if (
@@ -214,7 +226,7 @@ function App() {
   useEffect(() => {
     if (!targetStation) return;
     if (
-      !compareLastPlayed &&
+      !playedToday &&
       (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
     ) {
       setCorrectStationPopUp(true);
@@ -227,12 +239,12 @@ function App() {
       }, 4000);
     }
 
-    if (checkWin() && !compareLastPlayed) {
+    if (checkWin() && !playedToday) {
       updateUser(user?.username, true, today, guessedStationNames.length);
     } else if (
       guessedStationNames.length === 6 &&
       !checkWin() &&
-      !compareLastPlayed
+      !playedToday
     ) {
       updateUser(user?.username, false, today);
     }
@@ -299,7 +311,6 @@ function App() {
       )}
       {!loading && (
         <>
-          {(!compareLastPlayed || showStats) && (
             <div
               className={`stats-container ${showStats ? "open" : "closed"}`}
               data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
@@ -311,13 +322,12 @@ function App() {
                 today={today}
                 targetStation={targetStation}
                 lastPlayed={lastPlayed}
-                compareLastPlayed={compareLastPlayed}
+                playedToday={playedToday}
                 stopsFromTarget={stopsFromTarget}
                 checkWin={checkWin}
                 puzzleNumber={puzzleNumber}
               ></Stats>
             </div>
-          )}
           <div
             className={`how-to-play-container ${
               showHowToPlay ? "open" : "closed"
@@ -373,7 +383,7 @@ function App() {
             correctStationPopUp ||
             showStats) && <div className="backdrop"></div>}
           <div className="main-area-container">
-            {compareLastPlayed && (
+            {playedToday && (
               <button
                 className="full-map-button"
                 data-testid="full-map-button"
@@ -441,7 +451,7 @@ function App() {
                   }}
                 />
                 {Object.entries(lineMap).map(([name, src]) => {
-                  if (!guessedLines.has(name) && !compareLastPlayed) {
+                  if (!guessedLines.has(name) && !playedToday) {
                     return (
                       <img
                         className="line-blockers"
@@ -472,7 +482,7 @@ function App() {
                     ) <= 150;
                   if (
                     close &&
-                    (compareLastPlayed ||
+                    (playedToday ||
                       guessedStationNames.includes(normalize(name)))
                   ) {
                     return (
@@ -492,7 +502,7 @@ function App() {
                     );
                   }
                 })}
-                {compareLastPlayed && (
+                {playedToday && (
                   <div className="national-rail-stations">
                     <img
                       src={nationalRailStations}
@@ -544,7 +554,7 @@ function App() {
               </div>
             )}
           </div>
-          {(!compareLastPlayed || !lastPlayed) && (
+          {(!playedToday || !lastPlayed) && (
             <div
               className="keyboard-container"
               data-testid="keyboard-container"
@@ -565,7 +575,7 @@ function App() {
               ></Keyboard>
             </div>
           )}
-          {compareLastPlayed && (
+          {playedToday && (
             <div className="countdown-container" data-testid="countdown">
               <Countdown
                 today={today}
@@ -573,7 +583,7 @@ function App() {
                 nameToId={nameToId}
                 graph={graph}
                 guesses={guesses}
-                compareLastPlayed={compareLastPlayed}
+                playedToday={playedToday}
               ></Countdown>
             </div>
           )}

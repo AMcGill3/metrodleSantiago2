@@ -119,7 +119,6 @@ export const HowToPlay = ({
               );
           }
         })}
-        {/* make this so it's just the image not the whole map */}
         {Object.entries(stationMap).map(([name, src]) => {
           if (name === "santalucía") {
             return (

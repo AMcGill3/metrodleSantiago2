@@ -11,16 +11,8 @@
   top: 50%;
   left: 50%;
   max-height: max-content;
-}
-
-.top {
-  display:flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.main-area {
-  padding-top: 20px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .stats-container.open {
@@ -34,6 +26,15 @@
   pointer-events: none;
 }
 
+.main-area {
+  padding-top: 20px;
+}
+
+.top {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .exit-stats-button {
   background-color: transparent;
   border: 0;

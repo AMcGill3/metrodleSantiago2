@@ -8,12 +8,12 @@ export const Countdown = ({
   nameToId,
   guesses,
   graph,
-  compareLastPlayed,
+  playedToday,
 }) => {
   const [timeLeft, setTimeLeft] = useState("");
 
   const totalJourney = useMemo(() => {
-    if (!compareLastPlayed || !guesses) return;
+    if (!playedToday || !guesses) return;
     let total = 0;
     for (let i = 0; i < guesses.length - 1; i++) {
       const diff = bfsDistance(
@@ -24,7 +24,7 @@ export const Countdown = ({
       total += diff;
     }
     return total > 1 ? total : 1;
-  }, [guesses, compareLastPlayed, graph, nameToId]);
+  }, [guesses, playedToday, graph, nameToId]);
 
   useEffect(() => {
     const tomorrow = DateTime.now()

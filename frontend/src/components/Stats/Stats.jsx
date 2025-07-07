@@ -9,7 +9,7 @@ export const Stats = ({
   user,
   targetStation,
   lastPlayed,
-  compareLastPlayed,
+  playedToday,
   stopsFromTarget,
   checkWin,
   puzzleNumber,
@@ -117,7 +117,7 @@ export const Stats = ({
             const isTodayCorrectGuess =
               lastPlayed &&
               user?.game?.guesses?.length === guessCount &&
-              compareLastPlayed &&
+              playedToday &&
               checkWin();
 
             return (
@@ -146,11 +146,11 @@ export const Stats = ({
             onClick={() => {
               const results = shareResults();
 
-              if (navigator.share && compareLastPlayed) {
+              if (navigator.share && playedToday) {
                 navigator
                   .share({ text: results })
                   .catch((error) => console.error("Sharing failed", error));
-              } else if (compareLastPlayed) {
+              } else if (playedToday) {
                 navigator.clipboard
                   .writeText(results)
                   .then(() => alert("Results copied to clipboard"))
