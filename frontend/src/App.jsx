@@ -32,6 +32,7 @@ function App() {
     DateTime.now().setZone("America/Santiago").startOf("day")
   );
   const [loading, setLoading] = useState(true);
+  const [linesLoaded, setLinesLoaded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showFullMap, setShowFullMap] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -94,6 +95,31 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const preloadLineImages = async () => {
+      const imagePromises = Object.values(lineMap).map((src) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = src;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        setLinesLoaded(true);
+      } catch (error) {
+        console.error("Failed to load line images:", error);
+        setLinesLoaded(true);
+      }
+    };
+
+    preloadLineImages();
+  }, []);
+
+
+
+  useEffect(() => {
     async function fetchStations() {
       try {
         const res = await getAllStations();
@@ -108,12 +134,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (graph && targetStation && stations && user) {
+    if (graph && targetStation && stations && user && linesLoaded) {
       setTimeout(() => {
         setLoading(false);
       }, 600);
     }
-  }, [graph, targetStation, stations, user]);
+  }, [graph, targetStation, stations, user, linesLoaded]);
 
   const playedToday = useMemo(() => {
     if (!lastPlayed) return false;
@@ -224,10 +250,7 @@ function App() {
   // end game logic
   useEffect(() => {
     if (!targetStation) return;
-    if (
-      !playedToday &&
-      (checkWin() || (guessedStationNames.length === 6))
-    ) {
+    if (!playedToday && (checkWin() || guessedStationNames.length === 6)) {
       setCorrectStationPopUp(true);
       setTimeout(async () => {
         setLastPlayed(today);
@@ -339,6 +362,7 @@ function App() {
               graph={graph}
               nameToId={nameToId}
               stopsFromTarget={stopsFromTarget}
+              linesLoaded={linesLoaded}
             ></HowToPlay>
           </div>
           <div className={`about-container ${showAbout ? "open" : "closed"}`}>
@@ -414,7 +438,7 @@ function App() {
                   </svg>
                 </button>
               )}
-              <div className="map-container">
+              {linesLoaded && (<div className="map-container">
                 {targetStation && (
                   <div
                     className="map-centre-animation"
@@ -449,25 +473,25 @@ function App() {
                     top: targetStation ? `${mapY}px` : "0px",
                   }}
                 />
-                {Object.entries(lineMap).map(([name, src]) => {
-                  if (!guessedLines.has(name) && !playedToday) {
-                    return (
-                      <img
-                        className="line-blockers"
-                        key={name}
-                        src={src}
-                        alt={"bloqueador de línea"}
-                        style={{
-                          position: "absolute",
-                          width: "1705px",
-                          height: "1705px",
-                          left: targetStation ? `${mapX}px` : "0px",
-                          top: targetStation ? `${mapY}px` : "0px",
-                        }}
-                      ></img>
-                    );
-                  }
-                })}
+                  {Object.entries(lineMap).map(([name, src]) => {
+                    if (!guessedLines.has(name) && !playedToday) {
+                      return (
+                        <img
+                          className="line-blockers"
+                          key={name}
+                          src={src}
+                          alt={"bloqueador de línea"}
+                          style={{
+                            position: "absolute",
+                            width: "1705px",
+                            height: "1705px",
+                            left: targetStation ? `${mapX}px` : "0px",
+                            top: targetStation ? `${mapY}px` : "0px",
+                          }}
+                        ></img>
+                      );
+                    }
+                  })}
                 {Object.entries(stationMap).map(([name, src]) => {
                   const guessCoordinates = getStationCoordinates(name);
                   const close =
@@ -516,7 +540,7 @@ function App() {
                     ></img>
                   </div>
                 )}
-              </div>
+              </div>)}
             </div>
             <div
               className={`correct-guess-container ${

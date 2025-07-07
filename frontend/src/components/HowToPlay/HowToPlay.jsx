@@ -14,6 +14,7 @@ export const HowToPlay = ({
   graph,
   nameToId,
   stopsFromTarget,
+  linesLoaded
 }) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
@@ -58,7 +59,7 @@ export const HowToPlay = ({
             top: "-446px",
           }}
         />
-        {Object.entries(lineMap).map(([name, src]) => {
+        {linesLoaded && Object.entries(lineMap).map(([name, src]) => {
           return (
             <img
               className="line-blockers"
@@ -99,7 +100,7 @@ export const HowToPlay = ({
             top: "-446px",
           }}
         />
-        {Object.entries(lineMap).map(([name, src]) => {
+        {linesLoaded && Object.entries(lineMap).map(([name, src]) => {
           {
             if (name !== "1")
               return (
