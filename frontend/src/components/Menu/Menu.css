@@ -80,4 +80,7 @@
   .exit-menu {
     margin-bottom: 25px;
   }
+  .menu-item {
+    margin-bottom: 12px;
+  }
 }
