@@ -22,9 +22,9 @@ import { Countdown } from "./components/Countdown/Countdown.jsx";
 import { FullMap } from "./components/fullMap/fullMap.jsx";
 import fullMapButton from "../src/assets/fullMapButton.svg";
 import fullMapButtonDark from "../src/assets/fullMapButtonDark.svg";
-import loadingSymbolMorning from "../src/assets/loadingSymbols/loadingSymbolMorning.svg";
-import loadingSymbolAfternoon from "../src/assets/loadingSymbols/loadingSymbolAfternoon.svg";
-import loadingSymbolEvening from "../src/assets/loadingSymbols/loadingSymbolEvening.svg";
+import loadingSymbolMorning from "../src/assets/loadingSymbols/loadingSymbolMorning.png";
+import loadingSymbolAfternoon from "../src/assets/loadingSymbols/loadingSymbolAfternoon.png";
+import loadingSymbolEvening from "../src/assets/loadingSymbols/loadingSymbolEvening.png";
 import { DateTime } from "luxon";
 
 function App() {
@@ -190,21 +190,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loading && newUserCreated) {
-      setTimeout(() => {
-        setShowHowToPlay(true);
-        setNewUserCreated(false);
-      }, 100);
+    if (!loading) {
+      if (newUserCreated) {
+        setTimeout(() => {
+          setShowHowToPlay(true);
+          setNewUserCreated(false);
+        }, 100);
+      }
+      if (playedToday) {
+        setTimeout(() => {
+          setShowStats(true);
+        }, 100);
+      }
     }
-  }, [loading, user, newUserCreated]);
-
-  useEffect(() => {
-    if (!loading && playedToday) {
-      setTimeout(() => {
-        setShowStats(true);
-      }, 100);
-    }
-  }, [loading, playedToday]);
+  }, [loading, user, newUserCreated, playedToday]);
 
   const stopsFromTarget = (stationName) => {
     if (
@@ -227,7 +226,7 @@ function App() {
     if (!targetStation) return;
     if (
       !playedToday &&
-      (checkWin() || (guessedStationNames.length === 6 && !checkWin()))
+      (checkWin() || (guessedStationNames.length === 6))
     ) {
       setCorrectStationPopUp(true);
       setTimeout(async () => {
@@ -311,23 +310,23 @@ function App() {
       )}
       {!loading && (
         <>
-            <div
-              className={`stats-container ${showStats ? "open" : "closed"}`}
-              data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
-            >
-              <Stats
-                toggleStats={toggleStats}
-                theme={theme}
-                user={user}
-                today={today}
-                targetStation={targetStation}
-                lastPlayed={lastPlayed}
-                playedToday={playedToday}
-                stopsFromTarget={stopsFromTarget}
-                checkWin={checkWin}
-                puzzleNumber={puzzleNumber}
-              ></Stats>
-            </div>
+          <div
+            className={`stats-container ${showStats ? "open" : "closed"}`}
+            data-testid={`stats-container${showStats ? "-open" : "-closed"}`}
+          >
+            <Stats
+              toggleStats={toggleStats}
+              theme={theme}
+              user={user}
+              today={today}
+              targetStation={targetStation}
+              lastPlayed={lastPlayed}
+              playedToday={playedToday}
+              stopsFromTarget={stopsFromTarget}
+              checkWin={checkWin}
+              puzzleNumber={puzzleNumber}
+            ></Stats>
+          </div>
           <div
             className={`how-to-play-container ${
               showHowToPlay ? "open" : "closed"
