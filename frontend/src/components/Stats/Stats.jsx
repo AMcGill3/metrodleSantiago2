@@ -94,7 +94,6 @@ export const Stats = ({
           <div className="figure-item" data-testid="figure-item">
             <p>Porcentaje Ganado</p>
             <h3 data-testid="percent-won">
-              {" "}
               {played > 0 && wins > 0
                 ? `${Math.round((wins / played) * 100)}%`
                 : "0%"}
