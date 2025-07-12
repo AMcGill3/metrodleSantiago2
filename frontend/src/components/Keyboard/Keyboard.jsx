@@ -121,7 +121,7 @@ export const Keyboard = ({
           data-testid={`non-letter-button${
             filteredStations.length === 1 ? "-clickable" : ""
           }`}
-          alt={"Tecla de retoceso"}
+          alt={"Tecla de retroceso"}
           onClick={() => setSearch(search.substring(0, search.length - 1))}
         >
           <img
