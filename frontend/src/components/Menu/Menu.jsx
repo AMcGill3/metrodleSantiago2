@@ -58,7 +58,7 @@ export const Menu = ({
         <img className="menuSymbol" src={about}></img>
         <h4>Sobre</h4>
       </div>
-      <div className="menu-item" onClick={handleEmail}>
+      <div className="menu-item" onClick={handleEmail} alt={"Correo"}>
         <img className="menuSymbol" src={email}></img>
         <h4>Correo</h4>
       </div>

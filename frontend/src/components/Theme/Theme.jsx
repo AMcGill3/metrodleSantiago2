@@ -19,25 +19,44 @@ export const Theme = ({ toggleThemePanel, theme, setTheme }) => {
     } else {
       setTheme("dark");
     }
-    setSelectedTheme(mode)
+    setSelectedTheme(mode);
   };
   return (
     <>
-      <button className="close-theme-selector" onClick={toggleThemePanel}>
-        <img src={exit} className="exit-menu-img"></img>
+      <button
+        className="close-theme-selector"
+        onClick={toggleThemePanel}
+        alt={"salir de la sección tema"}
+      >
+        <img src={exit} className="exit-menu-img" alt={""}></img>
       </button>
       <h1>Tema</h1>
       <div className="theme-buttons">
         <button
-          className={`theme-button ${selectedTheme === "system" ? "selected" : ""}`}
+          className={`theme-button ${
+            selectedTheme === "system" ? "selected" : ""
+          }`}
+          alt={"Predeterminado"}
           onClick={() => toggleTheme("system")}
         >
           Predeterminado
         </button>
-        <button className={`theme-button ${selectedTheme === "light" ? "selected" : ""}`} onClick={() => toggleTheme("light")}>
+        <button
+          className={`theme-button ${
+            selectedTheme === "light" ? "selected" : ""
+          }`}
+          alt={"Claro"}
+          onClick={() => toggleTheme("light")}
+        >
           Claro
         </button>
-        <button className={`theme-button ${selectedTheme === "dark" ? "selected" : ""}`} onClick={() => toggleTheme("dark")}>
+        <button
+          className={`theme-button ${
+            selectedTheme === "dark" ? "selected" : ""
+          }`}
+          alt={"Claro"}
+          onClick={() => toggleTheme("dark")}
+        >
           Oscuro
         </button>
       </div>

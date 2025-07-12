@@ -409,6 +409,7 @@ function App() {
                 className="full-map-button"
                 data-testid="full-map-button"
                 onClick={toggleFullMap}
+                alt={"mapa completa"}
               >
                 <img
                   className="full-map-button-img"
@@ -419,7 +420,11 @@ function App() {
             )}
             <div className="game-area">
               {!showMenu && (
-                <button className="hamburger-button" onClick={toggleMenu}>
+                <button
+                  className="hamburger-button"
+                  onClick={toggleMenu}
+                  alt={"menu"}
+                >
                   <svg
                     className={`svgIcon ${theme === "dark" ? "dark" : "light"}`}
                     xmlns="http://www.w3.org/2000/svg"
@@ -436,41 +441,42 @@ function App() {
                   </svg>
                 </button>
               )}
-              {linesLoaded && (<div className="map-container">
-                {targetStation && (
-                  <div
-                    className="map-centre-animation"
-                    style={{
-                      left: `${
-                        tooClose(targetX)
-                          ? targetX - 50
-                          : tooFar(targetX)
-                          ? targetX - 1505 - 50
-                          : 50
-                      }px`,
-                      top: `${
-                        tooClose(targetY)
-                          ? targetY - 50
-                          : tooFar(targetY)
-                          ? targetY - 1505 - 50
-                          : 50
-                      }px`,
-                    }}
-                  ></div>
-                )}
+              {linesLoaded && (
+                <div className="map-container">
+                  {targetStation && (
+                    <div
+                      className="map-centre-animation"
+                      style={{
+                        left: `${
+                          tooClose(targetX)
+                            ? targetX - 50
+                            : tooFar(targetX)
+                            ? targetX - 1505 - 50
+                            : 50
+                        }px`,
+                        top: `${
+                          tooClose(targetY)
+                            ? targetY - 50
+                            : tooFar(targetY)
+                            ? targetY - 1505 - 50
+                            : 50
+                        }px`,
+                      }}
+                    ></div>
+                  )}
 
-                <img
-                  className="map"
-                  src={map}
-                  alt="Mapa del metro"
-                  style={{
-                    position: "absolute",
-                    width: "1705px",
-                    height: "1705px",
-                    left: targetStation ? `${mapX}px` : "0px",
-                    top: targetStation ? `${mapY}px` : "0px",
-                  }}
-                />
+                  <img
+                    className="map"
+                    src={map}
+                    alt="Mapa del metro"
+                    style={{
+                      position: "absolute",
+                      width: "1705px",
+                      height: "1705px",
+                      left: targetStation ? `${mapX}px` : "0px",
+                      top: targetStation ? `${mapY}px` : "0px",
+                    }}
+                  />
                   {Object.entries(lineMap).map(([name, src]) => {
                     if (!guessedLines.has(name) && !playedToday) {
                       return (
@@ -490,28 +496,43 @@ function App() {
                       );
                     }
                   })}
-                {Object.entries(stationMap).map(([name, src]) => {
-                  const guessCoordinates = getStationCoordinates(name);
-                  const close =
-                    guessCoordinates &&
-                    targetStation &&
-                    Math.abs(
-                      targetStation.coordinates[0] - guessCoordinates[0]
-                    ) <= 150 &&
-                    Math.abs(
-                      targetStation.coordinates[1] - guessCoordinates[1]
-                    ) <= 150;
-                  if (
-                    close &&
-                    (playedToday ||
-                      guessedStationNames.includes(normalize(name)))
-                  ) {
-                    return (
+                  {Object.entries(stationMap).map(([name, src]) => {
+                    const guessCoordinates = getStationCoordinates(name);
+                    const close =
+                      guessCoordinates &&
+                      targetStation &&
+                      Math.abs(
+                        targetStation.coordinates[0] - guessCoordinates[0]
+                      ) <= 150 &&
+                      Math.abs(
+                        targetStation.coordinates[1] - guessCoordinates[1]
+                      ) <= 150;
+                    if (
+                      close &&
+                      (playedToday ||
+                        guessedStationNames.includes(normalize(name)))
+                    ) {
+                      return (
+                        <img
+                          className="station-labels"
+                          key={name}
+                          src={src}
+                          alt={name}
+                          style={{
+                            position: "absolute",
+                            width: "1705px",
+                            height: "1705px",
+                            left: targetStation ? `${mapX}px` : "0px",
+                            top: targetStation ? `${mapY}px` : "0px",
+                          }}
+                        ></img>
+                      );
+                    }
+                  })}
+                  {playedToday && (
+                    <div className="national-rail-stations">
                       <img
-                        className="station-labels"
-                        key={name}
-                        src={src}
-                        alt={name}
+                        src={nationalRailStations}
                         style={{
                           position: "absolute",
                           width: "1705px",
@@ -519,26 +540,12 @@ function App() {
                           left: targetStation ? `${mapX}px` : "0px",
                           top: targetStation ? `${mapY}px` : "0px",
                         }}
+                        alt={"Estaciones nacionales"}
                       ></img>
-                    );
-                  }
-                })}
-                {playedToday && (
-                  <div className="national-rail-stations">
-                    <img
-                      src={nationalRailStations}
-                      style={{
-                        position: "absolute",
-                        width: "1705px",
-                        height: "1705px",
-                        left: targetStation ? `${mapX}px` : "0px",
-                        top: targetStation ? `${mapY}px` : "0px",
-                      }}
-                      alt={"Estaciones nacionales"}
-                    ></img>
-                  </div>
-                )}
-              </div>)}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div
               className={`correct-guess-container ${

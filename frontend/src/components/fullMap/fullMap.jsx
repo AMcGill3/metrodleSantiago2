@@ -1,4 +1,4 @@
-import fullMap from "../../assets/fullMapImage.svg"
+import fullMap from "../../assets/fullMapImage.svg";
 import exitMapSymbol from "../../assets/exitMenu.png";
 import "./fullMap.css";
 
@@ -10,11 +10,19 @@ export const FullMap = ({
 }) => {
   return (
     <>
-      <button className="exit-map-button" onClick={toggleFullMap} alt={"salir de mapa"}>
-        <img className="exit-menu-img" src={exitMapSymbol}></img>
+      <button
+        className="exit-map-button"
+        onClick={toggleFullMap}
+        alt={"salir de mapa"}
+      >
+        <img className="exit-menu-img" src={exitMapSymbol} alt={""}></img>
       </button>
       <div className="map">
-        <img className="map-background" src={fullMap} alt={"mapa completa"}></img>
+        <img
+          className="map-background"
+          src={fullMap}
+          alt={"mapa completa"}
+        ></img>
         {guesses.map((guess, guessIndex) => {
           return (
             <div
@@ -28,14 +36,16 @@ export const FullMap = ({
             ></div>
           );
         })}
-        {!checkWin() && (<div
-          className="target-animation-fail"
-          data-testid="target-animation-fail"
-          style={{
-            left: targetStation.coordinates[0] - 50,
-            top: targetStation.coordinates[1] - 50,
-          }}
-        ></div>)}
+        {!checkWin() && (
+          <div
+            className="target-animation-fail"
+            data-testid="target-animation-fail"
+            style={{
+              left: targetStation.coordinates[0] - 50,
+              top: targetStation.coordinates[1] - 50,
+            }}
+          ></div>
+        )}
       </div>
     </>
   );

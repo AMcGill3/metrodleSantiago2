@@ -77,8 +77,12 @@ export const Stats = ({
         <div data-testid="puzzle-number">
           Metrodle Santiago # {puzzleNumber}
         </div>
-        <button className="exit-stats-button" onClick={toggleStats}>
-          <img src={exit} className="exit-menu-img"></img>
+        <button
+          className="exit-stats-button"
+          onClick={toggleStats}
+          alt={"salir de la sección estadíasticas"}
+        >
+          <img src={exit} className="exit-menu-img" alt={""}></img>
         </button>
       </div>
       <div className="main-area">
@@ -142,6 +146,7 @@ export const Stats = ({
         <div className="share-button">
           <button
             className="share"
+            alt={"compartir"}
             onClick={() => {
               const results = shareResults();
 

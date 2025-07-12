@@ -95,6 +95,7 @@ export const Keyboard = ({
           data-testid={`non-letter-button${
             filteredStations.length === 1 ? "-clickable" : ""
           }`}
+          alt={"Introducir"}
           onClick={() => {
             if (filteredStations.length === 1 && filteredStations.length === 1 && !guessedStationNames.includes(normalize(filteredStations[0].name))) {
               handleGuess();
@@ -120,6 +121,7 @@ export const Keyboard = ({
           data-testid={`non-letter-button${
             filteredStations.length === 1 ? "-clickable" : ""
           }`}
+          alt={"Tecla de retoceso"}
           onClick={() => setSearch(search.substring(0, search.length - 1))}
         >
           <img

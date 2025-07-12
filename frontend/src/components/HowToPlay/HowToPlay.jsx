@@ -14,7 +14,7 @@ export const HowToPlay = ({
   graph,
   nameToId,
   stopsFromTarget,
-  linesLoaded
+  linesLoaded,
 }) => {
   const getStation = (name) => {
     return stations.find((station) => station.name === name);
@@ -28,8 +28,12 @@ export const HowToPlay = ({
     <div className="how-to-play">
       <div className="header">
         <img src={logo} className="logo"></img>
-        <button className="exit-how-to-play-button" onClick={toggleHowToPlay}>
-          <img src={exit} className="exit-menu-img"></img>
+        <button
+          className="exit-how-to-play-button"
+          onClick={toggleHowToPlay}
+          alt={"salir de la sección cómo jugar"}
+        >
+          <img src={exit} className="exit-menu-img" alt={""}></img>
         </button>
         <h1 className="menuComponentTitle">Cómo Jugar</h1>
       </div>
@@ -59,23 +63,24 @@ export const HowToPlay = ({
             top: "-446px",
           }}
         />
-        {linesLoaded && Object.entries(lineMap).map(([name, src]) => {
-          return (
-            <img
-              className="line-blockers"
-              key={name}
-              src={src}
-              alt={name}
-              style={{
-                position: "absolute",
-                width: "1705px",
-                height: "1705px",
-                left: "-855px",
-                top: "-446px",
-              }}
-            ></img>
-          );
-        })}
+        {linesLoaded &&
+          Object.entries(lineMap).map(([name, src]) => {
+            return (
+              <img
+                className="line-blockers"
+                key={name}
+                src={src}
+                alt={name}
+                style={{
+                  position: "absolute",
+                  width: "1705px",
+                  height: "1705px",
+                  left: "-855px",
+                  top: "-446px",
+                }}
+              ></img>
+            );
+          })}
       </div>
       <p>
         Una suposición incorrecta mostrará el nombre de cualquier estación y el
@@ -100,26 +105,27 @@ export const HowToPlay = ({
             top: "-446px",
           }}
         />
-        {linesLoaded && Object.entries(lineMap).map(([name, src]) => {
-          {
-            if (name !== "1")
-              return (
-                <img
-                  className="line-blockers"
-                  key={name}
-                  src={src}
-                  alt={name}
-                  style={{
-                    position: "absolute",
-                    width: "1705px",
-                    height: "1705px",
-                    left: "-855px",
-                    top: "-446px",
-                  }}
-                ></img>
-              );
-          }
-        })}
+        {linesLoaded &&
+          Object.entries(lineMap).map(([name, src]) => {
+            {
+              if (name !== "1")
+                return (
+                  <img
+                    className="line-blockers"
+                    key={name}
+                    src={src}
+                    alt={name}
+                    style={{
+                      position: "absolute",
+                      width: "1705px",
+                      height: "1705px",
+                      left: "-855px",
+                      top: "-446px",
+                    }}
+                  ></img>
+                );
+            }
+          })}
         {Object.entries(stationMap).map(([name, src]) => {
           if (name === "santalucía") {
             return (
